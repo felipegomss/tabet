@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
+import { IconDotsVertical, IconLogout, IconMoon, IconSun } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -21,6 +21,7 @@ import {
 import { DollarSign } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { StakeModal } from "./stake-modal";
 
 export function NavUser({
@@ -37,6 +38,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const [openStake, setOpenStake] = useState(stakeValue == null);
+  const { setTheme, theme } = useTheme();
 
   return (
     <SidebarMenu>
@@ -82,6 +84,27 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                <IconSun className="mr-2 h-4 w-4" />
+                Claro
+                {theme === "light" ? (
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    ativo
+                  </span>
+                ) : null}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <IconMoon className="mr-2 h-4 w-4" />
+                Escuro
+                {theme === "dark" ? (
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    ativo
+                  </span>
+                ) : null}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => setOpenStake(true)}>

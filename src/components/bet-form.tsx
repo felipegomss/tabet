@@ -73,10 +73,9 @@ export function BetForm({
       onSubmit={handleSubmit(onSubmit, (err) =>
         console.error("❌ Erros de validação:", err)
       )}
-      className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl"
+      className="grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2"
     >
-      {/* Casa */}
-      <div className="col-span-2 space-y-2">
+      <div className="space-y-2 sm:col-span-2">
         <Label>Casa</Label>
         <input
           {...form.register("house")}
@@ -88,8 +87,7 @@ export function BetForm({
         )}
       </div>
 
-      {/* Evento */}
-      <div className="col-span-2 space-y-2">
+      <div className="space-y-2 sm:col-span-2">
         <Label>Evento</Label>
         <input
           {...form.register("title")}
@@ -101,8 +99,7 @@ export function BetForm({
         )}
       </div>
 
-      {/* Mercado */}
-      <div className="col-span-2 space-y-2">
+      <div className="space-y-2 sm:col-span-2">
         <Label>Mercado</Label>
         <input
           {...form.register("market")}
@@ -111,7 +108,6 @@ export function BetForm({
         />
       </div>
 
-      {/* Data */}
       <div className="space-y-2">
         <Label>Data do Evento</Label>
         <DatePicker
@@ -123,20 +119,19 @@ export function BetForm({
         )}
       </div>
 
-      {/* Odd */}
       <div className="space-y-2">
         <Label>Odd</Label>
         <MaskedNumberInput
           value={odd}
           onValueChange={(val) => form.setValue("odd", val)}
           decimals={2}
+          suffix="%"
         />
         {errors.odd && (
           <p className="text-xs text-red-500">{errors.odd.message}</p>
         )}
       </div>
 
-      {/* Unidades */}
       <div className="space-y-2">
         <Label>Unidades</Label>
         <MaskedNumberInput
@@ -150,7 +145,6 @@ export function BetForm({
         )}
       </div>
 
-      {/* Valor (derivado) */}
       <div className="space-y-2">
         <Label>Valor (R$)</Label>
         <MaskedNumberInput
@@ -163,7 +157,7 @@ export function BetForm({
         />
       </div>
 
-      <div className="col-span-2 space-y-2">
+      <div className="space-y-2 sm:col-span-2">
         <Label>Resultado</Label>
         <Select
           value={form.watch("result")}
@@ -187,8 +181,7 @@ export function BetForm({
         )}
       </div>
 
-      {/* Submit */}
-      <div className="col-span-2 flex justify-end">
+      <div className="flex justify-end sm:col-span-2">
         <SubmitButton
           className="min-w-[9rem]"
           loadingText="Salvando..."

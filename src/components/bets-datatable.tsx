@@ -284,50 +284,51 @@ export function BetsDataTable({
 
   return (
     <div className="space-y-4">
-      {/* Filtros */}
-      <div className="flex flex-wrap gap-2">
-        <Input
-          placeholder="Filtrar por evento..."
-          defaultValue={filterTitle ?? ""}
-          onChange={(e) => updateParams({ title: e.target.value, page: 0 })}
-          className="max-w-xs"
-        />
+      <div className="flex flex-wrap gap-2 justify-between">
+        <div className="flex gap-2">
+          <Input
+            placeholder="Filtrar por evento..."
+            defaultValue={filterTitle ?? ""}
+            onChange={(e) => updateParams({ title: e.target.value, page: 0 })}
+            className="max-w-xs"
+          />
 
-        <Select
-          value={filterResult ?? "all"}
-          onValueChange={(value) =>
-            updateParams({
-              result: value === "all" ? undefined : value,
-              page: 0,
-            })
-          }
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Resultado" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="green">Green</SelectItem>
-            <SelectItem value="red">Red</SelectItem>
-            <SelectItem value="refund">Refund</SelectItem>
-            <SelectItem value="cashout">Cashout</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select
+            value={filterResult ?? "all"}
+            onValueChange={(value) =>
+              updateParams({
+                result: value === "all" ? undefined : value,
+                page: 0,
+              })
+            }
+          >
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Resultado" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="green">Green</SelectItem>
+              <SelectItem value="red">Red</SelectItem>
+              <SelectItem value="refund">Refund</SelectItem>
+              <SelectItem value="cashout">Cashout</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* Novo filtro de data */}
-        <DatePicker
-          value={filterDate ? new Date(filterDate) : undefined}
-          onChange={(date) =>
-            updateParams({
-              date: date ? date.toISOString().split("T")[0] : undefined, // yyyy-MM-dd
-              page: 0,
-            })
-          }
-        />
+        <div className="w-[250px]">
+          <DatePicker
+            value={filterDate ? new Date(filterDate) : undefined}
+            onChange={(date) =>
+              updateParams({
+                date: date ? date.toISOString().split("T")[0] : undefined, // yyyy-MM-dd
+                page: 0,
+              })
+            }
+          />
+        </div>
       </div>
 
-      {/* Tabela */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
