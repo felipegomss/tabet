@@ -16,7 +16,6 @@ interface InsertBetPayload {
 
 interface UpdateBetPayload {
   p_id: string;
-  p_user_id: string;
   p_house: string;
   p_title: string;
   p_market: string;
@@ -103,17 +102,8 @@ export async function deleteBetAction(betId: string) {
 export async function updateBetAction(values: BetFormValues & { id: string }) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error("Usuário não autenticado");
-  }
-
   const payload: UpdateBetPayload = {
     p_id: values.id,
-    p_user_id: user.id,
     p_house: values.house,
     p_title: values.title,
     p_market: values.market ?? "",
