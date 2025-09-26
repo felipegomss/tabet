@@ -1,19 +1,24 @@
-import { GalleryVerticalEnd } from "lucide-react"
+import { GalleryVerticalEnd } from "lucide-react";
 
-import { LoginForm } from "@/components/login-form"
-import { getFirstSearchParamValue, getSafeRedirectPath } from "@/utils/navigation"
+import { LoginForm } from "@/components/login-form";
+import {
+  getFirstSearchParamValue,
+  getSafeRedirectPath,
+} from "@/utils/navigation";
 
 type LoginPageProps = {
   searchParams?: Promise<{
-    message?: string | string[]
-    redirectTo?: string | string[]
-  }>
-}
+    message?: string | string[];
+    redirectTo?: string | string[];
+  }>;
+};
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const params = (await searchParams) ?? {}
-  const message = getFirstSearchParamValue(params.message)
-  const redirectTo = getSafeRedirectPath(getFirstSearchParamValue(params.redirectTo))
+  const params = (await searchParams) ?? {};
+  const message = getFirstSearchParamValue(params.message);
+  const redirectTo = getSafeRedirectPath(
+    getFirstSearchParamValue(params.redirectTo)
+  );
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
@@ -22,10 +27,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
           </div>
-          Acme Inc.
+          Tabet.
         </a>
         <LoginForm message={message} redirectTo={redirectTo} />
       </div>
     </div>
-  )
+  );
 }
