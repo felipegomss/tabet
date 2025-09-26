@@ -156,7 +156,9 @@ export function BalanceChart({ balance }: { balance: Balance[] }) {
                       : value;
                     const key = String(name);
                     const label =
-                      key === "saldo_acumulado" ? "Saldo Acumulado" : "Lucro do Dia";
+                      key === "saldo_acumulado"
+                        ? " Saldo Acumulado"
+                        : " Lucro do Dia";
                     return [formatCurrencyValue(resolvedValue ?? 0), label];
                   }}
                 />

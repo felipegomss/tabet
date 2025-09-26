@@ -148,12 +148,12 @@ export function ChartLineInteractive({ data }: Props) {
                     }
                     if (activeChart === "roi_percent") {
                       return [
-                        `${numericValue.toFixed(2)}%`,
+                        `${numericValue.toFixed(2)}% `,
                         chartConfig[activeChart].label,
                       ];
                     }
                     return [
-                      `R$ ${numericValue.toFixed(2)}`,
+                      `R$ ${numericValue.toFixed(2)} `,
                       chartConfig[activeChart].label,
                     ];
                   }}
