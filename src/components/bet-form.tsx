@@ -48,19 +48,19 @@ export function BetForm({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // valores observados
   const units = useWatch({ control: form.control, name: "units" });
   const odd = useWatch({ control: form.control, name: "odd" });
 
-  // valor calculado (unidades * stake do usuário)
-  const entryAmount = units && stake ? Number((units * stake).toFixed(2)) : 0;
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+
+  const entryAmount = units && stake ? round2(units * stake) : 0;
 
   const onSubmit = async (values: BetFormValues) => {
     try {
       setLoading(true);
       await createBetAction(values, userId);
       router.refresh();
-      if (onSuccess) onSuccess(); // 🔹 fecha modal se informado
+      onSuccess?.();
     } catch (err) {
       console.error("❌ Erro no submit:", err);
     } finally {
@@ -124,8 +124,7 @@ export function BetForm({
         <MaskedNumberInput
           value={odd}
           onValueChange={(val) => form.setValue("odd", val ?? 0)}
-          decimals={3}
-          suffix="%"
+          decimals={2}
         />
         {errors.odd && (
           <p className="text-xs text-red-500">{errors.odd.message}</p>
@@ -137,11 +136,11 @@ export function BetForm({
         <MaskedNumberInput
           value={units}
           onValueChange={(val) => {
-            const unitsCalc = (val ?? 0) / stake || 0;
-            form.setValue("units", Number(unitsCalc.toFixed(3)));
+            const u = Number((val ?? 0).toFixed(3));
+            form.setValue("units", u);
           }}
           suffix="ᙀ"
-          decimals={2}
+          decimals={3}
         />
         {errors.units && (
           <p className="text-xs text-red-500">{errors.units.message}</p>
@@ -152,9 +151,10 @@ export function BetForm({
         <Label>Valor (R$)</Label>
         <MaskedNumberInput
           value={entryAmount}
-          onValueChange={(val) =>
-            form.setValue("units", Number(((val ?? 0) / stake || 0).toFixed(2)))
-          }
+          onValueChange={(val) => {
+            const raw = (val ?? 0) / (stake || 1);
+            form.setValue("units", Number(raw.toFixed(3)));
+          }}
           prefix="R$"
           decimals={2}
         />
