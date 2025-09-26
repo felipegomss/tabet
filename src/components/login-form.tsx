@@ -36,12 +36,19 @@ export function LoginForm({
                 name="email"
                 type="email"
                 required
-                defaultValue=""
               />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="password">Senha</Label>
               <Input id="password" name="password" type="password" required />
+              <div className="flex items-center justify-between text-sm">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+                >
+                  Esqueci minha senha
+                </Link>
+              </div>
             </div>
             {message ? (
               <p className="text-sm text-destructive" role="alert">
@@ -49,7 +56,7 @@ export function LoginForm({
               </p>
             ) : null}
             <SubmitButton className="w-full" loadingText="Entrando...">
-              Login
+              Entrar
             </SubmitButton>
           </form>
           <div className="text-center text-sm mt-6">

@@ -2,27 +2,32 @@ import { BetsDataTable } from "@/components/bets-datatable";
 import { createClient } from "@/utils/supabase/server";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     result?: string;
     title?: string;
     date?: string;
-  };
+  }>;
 };
 
 export default async function BetsPage({ searchParams }: Props) {
+  const resolvedSearchParams = await searchParams;
   const supabase = await createClient();
 
-  const pageSize = 10;
-  const pageIndex = Number(searchParams.page ?? 0);
-  const filterResult = searchParams.result;
-  const filterTitle = searchParams.title;
-  const date = searchParams.date ?? undefined;
+  const pageSize = 12;
+  const pageIndex = Number(resolvedSearchParams.page ?? 0);
+  const filterResult = resolvedSearchParams.result;
+  const filterTitle = resolvedSearchParams.title;
+  const date = resolvedSearchParams.date ?? undefined;
 
   let query = supabase
-    .from("bets")
+    .from("bets_ordered")
     .select("*", { count: "exact" })
     .range(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1)
+    .order("event_date", { ascending: false })
+    .order("title_normalized", { ascending: true })
+    .order("market_normalized", { ascending: true })
+    .order("house", { ascending: true })
     .order("event_at", { ascending: false });
 
   if (filterTitle) query = query.ilike("title", `%${filterTitle}%`);
@@ -36,8 +41,6 @@ export default async function BetsPage({ searchParams }: Props) {
       .gte("event_at", startDate.toISOString())
       .lt("event_at", endDate.toISOString());
   }
-
-  console.log(query);
 
   const { data, count } = await query;
 

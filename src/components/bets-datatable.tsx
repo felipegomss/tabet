@@ -80,11 +80,15 @@ export function BetsDataTable({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedAction, setSelectedAction] = useState<{
-    label: string;
-    result: string;
-  } | null>(null);
+  const [modalState, setModalState] = useState<
+    | {
+        betId: string;
+        label: string;
+        result: string;
+        title: string;
+      }
+    | null
+  >(null);
 
   const columns: ColumnDef<Bet>[] = [
     {
@@ -158,26 +162,10 @@ export function BetsDataTable({
       cell: ({ row }) => {
         const bet = row.original;
 
-        const handleUpdate = (result: string, cashoutReturnGross?: number) => {
-          startTransition(async () => {
-            await updateBetResultAction(bet.id, result, cashoutReturnGross);
-            router.refresh();
-          });
-        };
-
-        const handleDelete = () => {
-          startTransition(async () => {
-            await deleteBetAction(bet.id);
-            router.refresh();
-          });
-        };
-
         const handleAction = (result: string, label: string) => {
-          setSelectedAction({ result, label });
-          setModalOpen(true);
+          setModalState({ betId: bet.id, result, label, title: bet.title });
         };
 
-        // 🔹 mapeamos as ações para deixar mais organizado
         const actions =
           bet.result === "pending"
             ? [
@@ -234,7 +222,7 @@ export function BetsDataTable({
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem
-                  className="text-red-600 focus:bg-red-50"
+                  className="text-red-600 focus:bg-destructive"
                   onClick={() => handleAction("delete", "Excluir aposta")}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -242,26 +230,32 @@ export function BetsDataTable({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <ConfirmActionModal
-              open={modalOpen}
-              onClose={() => setModalOpen(false)}
-              actionLabel={selectedAction?.label ?? ""}
-              requireCashoutValue={selectedAction?.result === "cashout"}
-              onConfirm={(value) => {
-                if (!selectedAction) return;
-                if (selectedAction.result === "delete") {
-                  handleDelete();
-                } else {
-                  handleUpdate(selectedAction.result, value);
-                }
-              }}
-            />
           </>
         );
       },
     },
   ];
+
+  const handleConfirmAction = (cashoutValue?: number) => {
+    if (!modalState) return;
+
+    const { betId, result } = modalState;
+
+    startTransition(async () => {
+      if (result === "delete") {
+        await deleteBetAction(betId);
+      } else {
+        await updateBetResultAction(
+          betId,
+          result,
+          result === "cashout" ? cashoutValue : undefined
+        );
+      }
+
+      setModalState(null);
+      router.refresh();
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -392,6 +386,19 @@ export function BetsDataTable({
           Próximo
         </Button>
       </div>
+
+      <ConfirmActionModal
+        open={modalState !== null}
+        onClose={() => setModalState(null)}
+        actionLabel={modalState?.label ?? ""}
+        description={
+          modalState
+            ? `Deseja realmente ${modalState.label.toLowerCase()} "${modalState.title}"?`
+            : undefined
+        }
+        requireCashoutValue={modalState?.result === "cashout"}
+        onConfirm={handleConfirmAction}
+      />
     </div>
   );
 }

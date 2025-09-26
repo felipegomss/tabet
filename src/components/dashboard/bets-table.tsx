@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Bet = {
   id: string;
-  event_name: string;
+  title: string;
   house: string;
   event_at: string;
   odd: number;
@@ -49,7 +49,7 @@ export function BetsTable({
           {data.length > 0 ? (
             data.map((bet) => (
               <TableRow key={bet.id}>
-                <TableCell>{bet.event_name}</TableCell>
+                <TableCell>{bet.title}</TableCell>
                 <TableCell>{bet.house}</TableCell>
                 <TableCell>
                   {new Date(bet.event_at).toLocaleString("pt-BR", {

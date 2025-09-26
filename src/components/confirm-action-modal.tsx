@@ -30,8 +30,20 @@ export function ConfirmActionModal({
 }: ConfirmActionModalProps) {
   const [cashoutValue, setCashoutValue] = useState("");
 
+  const handleClose = () => {
+    setCashoutValue("");
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          handleClose();
+        }
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Confirmação</DialogTitle>
@@ -46,8 +58,10 @@ export function ConfirmActionModal({
               Valor bruto do Cashout
             </label>
             <MaskedNumberInput
-              value={Number(cashoutValue)}
-              onValueChange={(value) => setCashoutValue(value.toString())}
+              value={cashoutValue === "" ? undefined : Number(cashoutValue)}
+              onValueChange={(value) =>
+                setCashoutValue(value === undefined ? "" : value.toString())
+              }
               prefix="R$"
               decimals={2}
             />
@@ -55,7 +69,7 @@ export function ConfirmActionModal({
         )}
 
         <div className="flex justify-end gap-2 mt-6">
-          <SubmitButton type="button" variant="outline" onClick={onClose}>
+          <SubmitButton type="button" variant="outline" onClick={handleClose}>
             Cancelar
           </SubmitButton>
           <SubmitButton
@@ -67,10 +81,10 @@ export function ConfirmActionModal({
                   return;
                 }
                 onConfirm(num);
-                onClose();
+                handleClose();
               } else {
                 onConfirm();
-                onClose();
+                handleClose();
               }
             }}
           >

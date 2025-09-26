@@ -123,7 +123,7 @@ export function BetForm({
         <Label>Odd</Label>
         <MaskedNumberInput
           value={odd}
-          onValueChange={(val) => form.setValue("odd", val)}
+          onValueChange={(val) => form.setValue("odd", val ?? 0)}
           decimals={2}
           suffix="%"
         />
@@ -136,7 +136,7 @@ export function BetForm({
         <Label>Unidades</Label>
         <MaskedNumberInput
           value={units}
-          onValueChange={(val) => form.setValue("units", val)}
+          onValueChange={(val) => form.setValue("units", val ?? 0)}
           suffix="ᙀ"
           decimals={2}
         />
@@ -150,7 +150,10 @@ export function BetForm({
         <MaskedNumberInput
           value={entryAmount}
           onValueChange={(val) =>
-            form.setValue("units", Number((val / stake).toFixed(2)))
+            form.setValue(
+              "units",
+              Number((((val ?? 0) / stake) || 0).toFixed(2))
+            )
           }
           prefix="R$"
           decimals={2}

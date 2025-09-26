@@ -72,7 +72,10 @@ function TrendCard({
 
         <ChartContainer
           config={trendChartConfig}
-          className={cn("mt-auto w-full flex-1 min-h-[4rem]", chartClassName)}
+          className={cn(
+            "mt-auto w-full flex-1 min-h-[4rem] max-h-24",
+            chartClassName
+          )}
         >
           <LineChart data={data}>
             <Line
@@ -121,7 +124,7 @@ export function CardsStats({
       const tone: TrendTone =
         diff === 0 ? "neutral" : diff > 0 ? "positive" : "negative";
       return {
-        text: `${diff.toFixed(1)}% vs início do período`,
+        text: `${diff.toFixed(1)}% vs últimos 100 dias`,
         tone,
       };
     },
@@ -138,7 +141,7 @@ export function CardsStats({
       const tone: TrendTone =
         percent === 0 ? "neutral" : percent > 0 ? "positive" : "negative";
       return {
-        text: `${percent.toFixed(1)}% vs início do período`,
+        text: `${percent.toFixed(1)}% vs últimos 100 dias`,
         tone,
       };
     },
@@ -148,7 +151,7 @@ export function CardsStats({
     <div className={cn("grid h-full min-h-0 grid-rows-2 gap-4", className)}>
       <TrendCard
         title="Taxa de Acerto"
-        subtitle="(últimos 100 dias)"
+        subtitle="(hoje)"
         formattedValue={
           typeof latestAccuracy === "number"
             ? `${latestAccuracy.toFixed(1)}%`
@@ -163,7 +166,7 @@ export function CardsStats({
 
       <TrendCard
         title="Stake Média"
-        subtitle="(últimos 100 dias)"
+        subtitle="(hoje)"
         formattedValue={`R$${
           typeof latestStake === "number" ? latestStake.toFixed(2) : "0,00"
         }`}
