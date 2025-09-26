@@ -72,7 +72,7 @@ export function HouseSelect({
                   setOpen(false);
                 }}
               >
-                Usar "{inputValue}"
+                Usar &quot;{inputValue}&quot;
               </Button>
             </CommandEmpty>
             <CommandGroup>
