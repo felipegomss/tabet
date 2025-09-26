@@ -1,5 +1,6 @@
 "use client";
 
+import { SubmitButton } from "@/components/submit-button";
 import {
   Dialog,
   DialogContent,
@@ -12,29 +13,27 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { saveStakeAction } from "@/lib/stake-actions";
 import { formatCurrency, parseCurrency } from "@/lib/utils";
-import { SubmitButton } from "@/components/submit-button";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUserSettings } from "@/providers/user-settings-provider";
 
 interface StakeModalProps {
-  defaultValue: number | null;
-  userId?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function StakeModal({
-  defaultValue,
-  userId,
-  open,
-  onOpenChange,
-}: StakeModalProps) {
-  const [value, setValue] = useState(
-    defaultValue ? formatCurrency(defaultValue) : ""
-  );
+export function StakeModal({ open, onOpenChange }: StakeModalProps) {
+  const { userId, stakeValue, setStakeValue } = useUserSettings();
+  const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (open) {
+      setValue(stakeValue != null ? formatCurrency(stakeValue) : "");
+    }
+  }, [open, stakeValue]);
 
   const handleChange = (raw: string) => {
     const clean = raw.replace(/\D/g, "");
@@ -50,7 +49,9 @@ export function StakeModal({
     try {
       const clean = parseCurrency(value);
       await saveStakeAction(userId, clean);
+      setStakeValue(clean);
       router.refresh();
+      onOpenChange?.(false);
     } finally {
       setLoading(false);
     }

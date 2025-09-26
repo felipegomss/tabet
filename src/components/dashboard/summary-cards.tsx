@@ -50,7 +50,7 @@ export function SummaryCards({
           <CardDescription>Total Apostado</CardDescription>
           <CardTitle>R$ {total_apostado.toFixed(2)}</CardTitle>
           <CardAction>
-            <Badge variant="outline">Últimos 100 dias</Badge>
+            <Badge variant="outline">Últimos 90 dias</Badge>
           </CardAction>
         </CardHeader>
         <CardFooter>

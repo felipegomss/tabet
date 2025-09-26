@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { UserSettingsProvider } from "@/providers/user-settings-provider";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { type CSSProperties, type ReactNode } from "react";
@@ -41,18 +42,17 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <SidebarProvider style={sidebarStyles}>
-      <AppSidebar
-        variant="inset"
-        defaultStakeValue={stakeValue}
-        user={{
-          name: user.user_metadata.name,
-          email: user.email ?? "",
-        }}
-        userId={user?.id}
-      />
-      <SidebarInset>
-        <SiteHeader userId={user?.id ?? ""} stakeValue={stakeValue ?? 50} />
+    <UserSettingsProvider userId={user.id} stakeValue={stakeValue}>
+      <SidebarProvider style={sidebarStyles}>
+        <AppSidebar
+          variant="inset"
+          user={{
+            name: user.user_metadata.name,
+            email: user.email ?? "",
+          }}
+        />
+        <SidebarInset>
+          <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -60,7 +60,8 @@ export default async function ProtectedLayout({
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </UserSettingsProvider>
   );
 }

@@ -23,8 +23,6 @@ import {
 } from "@/components/ui/sidebar";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-  defaultStakeValue?: number | null;
-  userId?: string;
   user: {
     name: string;
     email: string;
@@ -64,12 +62,7 @@ const navData = {
   ],
 };
 
-export function AppSidebar({
-  defaultStakeValue = null,
-  userId,
-  user,
-  ...props
-}: AppSidebarProps) {
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -96,11 +89,7 @@ export function AppSidebar({
         />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser
-          user={user}
-          stakeValue={defaultStakeValue}
-          userId={userId ?? ""}
-        />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

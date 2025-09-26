@@ -2,10 +2,7 @@
 
 import * as React from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-import type {
-  NameType,
-  ValueType,
-} from "recharts/types/component/DefaultTooltipContent";
+import type { ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 import {
   Card,
@@ -65,7 +62,7 @@ export function ChartLineInteractive({ data }: Props) {
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
         {/* Header */}
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
-          <CardTitle>Indicadores (últimos 100 dias)</CardTitle>
+          <CardTitle>Indicadores (últimos 90 dias)</CardTitle>
           <CardDescription>
             Evolução diária das apostas e desempenho
           </CardDescription>
@@ -139,7 +136,7 @@ export function ChartLineInteractive({ data }: Props) {
                       year: "numeric",
                     })
                   }
-                  formatter={(value: ValueType, _name: NameType) => {
+                  formatter={(value: ValueType) => {
                     const numericValue = Number(
                       Array.isArray(value) ? value[0] : value ?? 0
                     );

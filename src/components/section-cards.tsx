@@ -14,7 +14,7 @@ export default async function SectionCards() {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("bets_summary_last_100_days")
+    .from("bets_summary_last_90_days")
     .select("*")
     .single();
 
@@ -34,12 +34,12 @@ export default async function SectionCards() {
           <CardTitle>R$ {total_apostado.toFixed(2)}</CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <IconTrendingUp /> últimos 100 dias
+              <IconTrendingUp /> últimos 90 dias
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter>
-          <div>Volume apostado nos últimos 100 dias</div>
+          <div>Volume apostado nos últimos 90 dias</div>
         </CardFooter>
       </Card>
 

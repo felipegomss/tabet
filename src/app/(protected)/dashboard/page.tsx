@@ -16,7 +16,7 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // 1) Linha diária (100d)
+  // 1) Linha diária (90d)
   const { data: daily } = await supabase
     .from("bets_daily_summary")
     .select("*")
@@ -56,10 +56,11 @@ export default async function DashboardPage() {
       .order("event_at", { ascending: false }),
   ]);
 
-  // 4) Balanço acumulado (100d)
+  // 4) Balanço acumulado (90d)
   const { data: balance } = await supabase
-    .from("bets_balance_last_100_days")
+    .from("bets_balance_last_90_days")
     .select("*")
+    .eq("user_id", user.id)
     .order("dia", { ascending: true });
 
   return (

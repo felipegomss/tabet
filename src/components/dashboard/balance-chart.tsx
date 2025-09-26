@@ -56,19 +56,21 @@ function formatCurrencyValue(value: string | number) {
 }
 
 export function BalanceChart({ balance }: { balance: Balance[] }) {
-  const [timeRange, setTimeRange] = React.useState("100d");
+  const [timeRange, setTimeRange] = React.useState("90d");
 
   const filteredData = React.useMemo(() => {
     if (!balance?.length) return [];
     const referenceDate = new Date();
     const daysToSubtract =
-      timeRange === "30d" ? 30 : timeRange === "7d" ? 7 : 100;
+      timeRange === "30d" ? 30 : timeRange === "7d" ? 7 : 90;
 
     const startDate = new Date();
     startDate.setDate(referenceDate.getDate() - daysToSubtract);
 
     return balance.filter((item) => new Date(item.dia) >= startDate);
   }, [balance, timeRange]);
+
+  console.log(balance);
 
   return (
     <Card className="pt-0">
@@ -84,10 +86,10 @@ export function BalanceChart({ balance }: { balance: Balance[] }) {
             className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex"
             aria-label="Selecione um período"
           >
-            <SelectValue placeholder="Últimos 100 dias" />
+            <SelectValue placeholder="Últimos 90 dias" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="100d">Últimos 100 dias</SelectItem>
+            <SelectItem value="90d">Últimos 90 dias</SelectItem>
             <SelectItem value="30d">Últimos 30 dias</SelectItem>
             <SelectItem value="7d">Últimos 7 dias</SelectItem>
           </SelectContent>

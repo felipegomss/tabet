@@ -25,18 +25,22 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
+  BanknoteArrowDown,
   Check,
-  DollarSign,
+  Edit,
   MoreHorizontal,
+  RefreshCcw,
   RotateCcw,
   Trash2,
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
+import { BetForm } from "./bet-form";
 import { ConfirmActionModal } from "./confirm-action-modal";
 import { DatePicker } from "./date-picker";
 import { Badge } from "./ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,17 +50,20 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-type Bet = {
+export type Bet = {
   id: string;
   house: string;
   title: string;
   market: string;
+  units: number;
   event_at: string;
   odd: number;
   entry_amount: number;
   profit_loss: number;
-  result: string;
+  result: "pending" | "green" | "red" | "refund" | "cashout";
 };
+
+type BetResult = Bet["result"];
 
 interface BetsTableProps {
   data: Bet[];
@@ -80,15 +87,15 @@ export function BetsDataTable({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [modalState, setModalState] = useState<
-    | {
-        betId: string;
-        label: string;
-        result: string;
-        title: string;
-      }
-    | null
-  >(null);
+  const [modalState, setModalState] = useState<{
+    betId: string;
+    label: string;
+    result: BetResult | "delete";
+    title: string;
+  } | null>(null);
+  const [editModalState, setEditModalState] = useState<{
+    betId: string;
+  } | null>(null);
 
   const columns: ColumnDef<Bet>[] = [
     {
@@ -131,7 +138,12 @@ export function BetsDataTable({
       accessorKey: "result",
       header: "Resultado",
       cell: ({ row }) => {
-        const result = row.getValue("result") as string;
+        const result = row.getValue("result") as
+          | "pending"
+          | "green"
+          | "red"
+          | "refund"
+          | "cashout";
         const variants: Record<
           string,
           | "default"
@@ -162,8 +174,13 @@ export function BetsDataTable({
       cell: ({ row }) => {
         const bet = row.original;
 
-        const handleAction = (result: string, label: string) => {
-          setModalState({ betId: bet.id, result, label, title: bet.title });
+        const handleAction = (result: BetResult | "delete", label: string) => {
+          setModalState({
+            betId: bet.id,
+            result,
+            label,
+            title: bet.title,
+          });
         };
 
         const actions =
@@ -175,6 +192,11 @@ export function BetsDataTable({
                   icon: <Check className="h-4 w-4 text-green-600" />,
                 },
                 {
+                  result: "refund",
+                  label: "Marcar como Refund",
+                  icon: <RefreshCcw className="h-4 w-4 text-blue-600" />,
+                },
+                {
                   result: "red",
                   label: "Marcar como Red",
                   icon: <X className="h-4 w-4 text-red-600" />,
@@ -182,7 +204,9 @@ export function BetsDataTable({
                 {
                   result: "cashout",
                   label: "Marcar como Cashout",
-                  icon: <DollarSign className="h-4 w-4 text-yellow-600" />,
+                  icon: (
+                    <BanknoteArrowDown className="h-4 w-4 text-yellow-600" />
+                  ),
                 },
               ]
             : [
@@ -212,7 +236,17 @@ export function BetsDataTable({
                 {actions.map((action) => (
                   <DropdownMenuItem
                     key={action.result}
-                    onClick={() => handleAction(action.result, action.label)}
+                    onClick={() =>
+                      handleAction(
+                        action.result as
+                          | "pending"
+                          | "green"
+                          | "red"
+                          | "refund"
+                          | "cashout",
+                        action.label
+                      )
+                    }
                   >
                     {action.icon}
                     <span className="ml-2">{action.label}</span>
@@ -222,7 +256,12 @@ export function BetsDataTable({
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem
-                  className="text-red-600 focus:bg-destructive"
+                  onClick={() => setEditModalState({ betId: bet.id })}
+                >
+                  <Edit className="h-4 w-4" />
+                  <span className="ml-2">Editar</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={() => handleAction("delete", "Excluir aposta")}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -393,12 +432,32 @@ export function BetsDataTable({
         actionLabel={modalState?.label ?? ""}
         description={
           modalState
-            ? `Deseja realmente ${modalState.label.toLowerCase()} "${modalState.title}"?`
+            ? `Deseja realmente ${modalState.label.toLowerCase()} "${
+                modalState.title
+              }"?`
             : undefined
         }
         requireCashoutValue={modalState?.result === "cashout"}
         onConfirm={handleConfirmAction}
       />
+      <Dialog
+        open={editModalState !== null}
+        onOpenChange={() => setEditModalState(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Aposta</DialogTitle>
+          </DialogHeader>
+          <BetForm
+            onSuccess={() => setEditModalState(null)}
+            bet={
+              editModalState?.betId
+                ? data.find((bet) => bet.id === editModalState.betId)
+                : undefined
+            }
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

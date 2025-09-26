@@ -20,23 +20,21 @@ import {
 } from "@/components/ui/sidebar";
 import { DollarSign } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
+import { useUserSettings } from "@/providers/user-settings-provider";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 import { StakeModal } from "./stake-modal";
 
 export function NavUser({
   user,
-  stakeValue,
-  userId,
 }: {
   user: {
     name: string;
     email: string;
   };
-  stakeValue: number | null;
-  userId: string;
 }) {
   const { isMobile } = useSidebar();
+  const { stakeValue } = useUserSettings();
   const [openStake, setOpenStake] = useState(stakeValue == null);
   const { setTheme, theme } = useTheme();
 
@@ -127,8 +125,6 @@ export function NavUser({
 
       {/* Passa controle para o modal */}
       <StakeModal
-        defaultValue={stakeValue}
-        userId={userId}
         open={openStake}
         onOpenChange={setOpenStake}
       />

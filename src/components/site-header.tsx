@@ -13,19 +13,13 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { IconCirclePlusFilled } from "@tabler/icons-react";
 import { useState } from "react";
 
-export function SiteHeader({
-  userId,
-  stakeValue,
-}: {
-  userId: string;
-  stakeValue: number;
-}) {
+export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 lg:gap-2">
-        <SidebarTrigger className="-ml-1" />
+        <SidebarTrigger className="ml-1" />
         <Separator
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
@@ -47,11 +41,7 @@ export function SiteHeader({
           <DialogHeader>
             <DialogTitle>Nova Aposta</DialogTitle>
           </DialogHeader>
-          <BetForm
-            userId={userId}
-            stake={stakeValue}
-            onSuccess={() => setOpen(false)}
-          />
+          <BetForm onSuccess={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </header>

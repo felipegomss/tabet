@@ -2,12 +2,14 @@
 
 import { SubmitButton } from "@/components/submit-button";
 import { Label } from "@/components/ui/label";
-import { createBetAction } from "@/lib/bet-actions";
+import { createBetAction, updateBetAction } from "@/lib/bet-actions";
 import { betSchema, type BetFormValues } from "@/lib/validations/bet";
+import { useUserSettings } from "@/providers/user-settings-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { Bet } from "./bets-datatable";
 import { DatePicker } from "./date-picker";
 import { MaskedNumberInput } from "./ui/masked-number-input";
 import {
@@ -18,25 +20,23 @@ import {
   SelectValue,
 } from "./ui/select";
 
-export function BetForm({
-  userId,
-  stake,
-  onSuccess,
-}: {
-  userId: string;
-  stake: number;
+interface BetFormProps {
   onSuccess?: () => void;
-}) {
+  bet?: Bet;
+}
+
+export function BetForm({ onSuccess, bet }: BetFormProps) {
+  const { userId, stakeValue } = useUserSettings();
   const form = useForm<BetFormValues>({
     resolver: zodResolver(betSchema),
     defaultValues: {
-      house: "",
-      title: "",
-      market: "",
-      event_at: new Date(),
-      odd: 1,
-      units: 1,
-      result: "pending",
+      house: bet?.house ?? "",
+      title: bet?.title ?? "",
+      market: bet?.market ?? "",
+      event_at: bet?.event_at ? new Date(bet.event_at) : new Date(),
+      odd: bet?.odd ?? 1,
+      units: bet?.units ?? 1,
+      result: bet?.result ?? "pending",
     },
   });
 
@@ -53,12 +53,22 @@ export function BetForm({
 
   const round2 = (n: number) => Math.round(n * 100) / 100;
 
-  const entryAmount = units && stake ? round2(units * stake) : 0;
+  const effectiveStake = stakeValue && stakeValue > 0 ? stakeValue : 0;
+
+  const entryAmount =
+    units && effectiveStake ? round2(units * effectiveStake) : 0;
 
   const onSubmit = async (values: BetFormValues) => {
     try {
       setLoading(true);
-      await createBetAction(values, userId);
+      if (!userId) {
+        throw new Error("Usuário não autenticado");
+      }
+      if (bet?.id) {
+        await updateBetAction({ ...values, id: bet.id });
+      } else {
+        await createBetAction(values);
+      }
       router.refresh();
       onSuccess?.();
     } catch (err) {
@@ -152,7 +162,8 @@ export function BetForm({
         <MaskedNumberInput
           value={entryAmount}
           onValueChange={(val) => {
-            const raw = (val ?? 0) / (stake || 1);
+            if (!effectiveStake) return;
+            const raw = (val ?? 0) / effectiveStake;
             form.setValue("units", Number(raw.toFixed(3)));
           }}
           prefix="R$"

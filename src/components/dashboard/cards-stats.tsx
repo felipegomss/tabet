@@ -124,7 +124,7 @@ export function CardsStats({
       const tone: TrendTone =
         diff === 0 ? "neutral" : diff > 0 ? "positive" : "negative";
       return {
-        text: `${diff.toFixed(1)}% vs últimos 100 dias`,
+        text: `${diff.toFixed(1)}% vs últimos 90 dias`,
         tone,
       };
     },
@@ -141,7 +141,7 @@ export function CardsStats({
       const tone: TrendTone =
         percent === 0 ? "neutral" : percent > 0 ? "positive" : "negative";
       return {
-        text: `${percent.toFixed(1)}% vs últimos 100 dias`,
+        text: `${percent.toFixed(1)}% vs últimos  90 dias`,
         tone,
       };
     },
