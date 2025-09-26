@@ -21,7 +21,7 @@ export default async function DashboardPage() {
     .from("bets_daily_summary")
     .select("*")
     .eq("user_id", user.id)
-    .order("date", { ascending: true });
+    .order("day", { ascending: true });
 
   // 2) Mini cards
   const [accuracy, avgStake] = await Promise.all([
@@ -29,12 +29,12 @@ export default async function DashboardPage() {
       .from("bets_daily_accuracy")
       .select("*")
       .eq("user_id", user.id)
-      .order("dia"),
+      .order("day", { ascending: true }),
     supabase
       .from("bets_daily_avg_stake")
       .select("*")
       .eq("user_id", user.id)
-      .order("dia"),
+      .order("day", { ascending: true }),
   ]);
 
   // 3) Tabelas
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
     .from("bets_balance_last_90_days")
     .select("*")
     .eq("user_id", user.id)
-    .order("dia", { ascending: true });
+    .order("day", { ascending: true });
 
   return (
     <div className="flex flex-col gap-8">
@@ -74,11 +74,11 @@ export default async function DashboardPage() {
 
         <CardsStats
           accuracy={(accuracy.data ?? []).map((d) => ({
-            date: d.dia,
+            date: d.day,
             value: Number(d.accuracy ?? 0),
           }))}
           avgStake={(avgStake.data ?? []).map((d) => ({
-            date: d.dia,
+            date: d.day,
             value: Number(d.avg_stake ?? 0),
           }))}
         />

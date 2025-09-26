@@ -6,6 +6,7 @@ import { createBetAction, updateBetAction } from "@/lib/bet-actions";
 import { betSchema, type BetFormValues } from "@/lib/validations/bet";
 import { useUserSettings } from "@/providers/user-settings-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formatInTimeZone } from "date-fns-tz";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -21,6 +22,17 @@ import {
   SelectValue,
 } from "./ui/select";
 
+const EVENT_TIME_ZONE = "America/Sao_Paulo";
+
+function toZonedMidnight(date: Date) {
+  const zonedString = formatInTimeZone(
+    date,
+    EVENT_TIME_ZONE,
+    "yyyy-MM-dd'T'00:00:00xxx"
+  );
+  return new Date(zonedString);
+}
+
 interface BetFormProps {
   onSuccess?: () => void;
   bet?: Bet;
@@ -34,7 +46,9 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
       house: bet?.house ?? "",
       title: bet?.title ?? "",
       market: bet?.market ?? "",
-      event_at: bet?.event_at ? new Date(bet.event_at) : new Date(),
+      event_at: bet?.event_at
+        ? toZonedMidnight(new Date(bet.event_at))
+        : toZonedMidnight(new Date()),
       odd: bet?.odd ?? 1,
       units: bet?.units ?? 1,
       result: bet?.result ?? "pending",
@@ -122,7 +136,10 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
         <Label>Data do Evento</Label>
         <DatePicker
           value={form.watch("event_at")}
-          onChange={(date) => form.setValue("event_at", date!)}
+          onChange={(date) => {
+            if (!date) return;
+            form.setValue("event_at", toZonedMidnight(date));
+          }}
         />
         {errors.event_at && (
           <p className="text-xs text-red-500">{errors.event_at.message}</p>

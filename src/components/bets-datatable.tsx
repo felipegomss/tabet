@@ -25,6 +25,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { formatInTimeZone } from "date-fns-tz";
 import {
   BanknoteArrowDown,
   Check,
@@ -66,7 +67,10 @@ export type Bet = {
 
 type BetResult = Bet["result"];
 
-const RESULT_BADGE_VARIANT: Record<BetResult, "default" | "secondary" | "destructive" | "outline" | "info" | "warning"> = {
+const RESULT_BADGE_VARIANT: Record<
+  BetResult,
+  "default" | "secondary" | "destructive" | "outline" | "info" | "warning"
+> = {
   green: "default",
   red: "destructive",
   refund: "secondary",
@@ -81,6 +85,8 @@ const RESULT_ICON_COLOR: Record<BetResult, string> = {
   cashout: "text-blue-500",
   pending: "text-yellow-500",
 };
+
+const DATE_FILTER_TIME_ZONE = "America/Sao_Paulo";
 
 interface BetsTableProps {
   data: Bet[];
@@ -382,10 +388,16 @@ export function BetsDataTable({
 
         <div className="w-[250px]">
           <DatePicker
-            value={filterDate ? new Date(filterDate) : undefined}
+            value={
+              filterDate
+                ? new Date(`${filterDate}T00:00:00`)
+                : undefined
+            }
             onChange={(date) =>
               updateParams({
-                date: date ? date.toISOString().split("T")[0] : undefined, // yyyy-MM-dd
+                date: date
+                  ? formatInTimeZone(date, DATE_FILTER_TIME_ZONE, "yyyy-MM-dd")
+                  : undefined,
                 page: 0,
               })
             }

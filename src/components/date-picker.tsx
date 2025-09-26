@@ -17,7 +17,7 @@ interface DatePickerProps {
   onChange?: (date: Date | undefined) => void;
 }
 
-const TIME_ZONE = "UTC";
+const TIME_ZONE = "America/Sao_Paulo";
 
 export function DatePicker({ value, onChange }: DatePickerProps) {
   const formattedDate = React.useMemo(() => {

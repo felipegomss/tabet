@@ -21,7 +21,7 @@ export default async function BetsPage({ searchParams }: Props) {
   const date = resolvedSearchParams.date ?? undefined;
 
   let query = supabase
-    .from("bets_ordered")
+    .from("bets_list_paged")
     .select("*", { count: "exact" })
     .range(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1)
     .order("event_date", { ascending: false })
@@ -43,8 +43,6 @@ export default async function BetsPage({ searchParams }: Props) {
   }
 
   const { data, count } = await query;
-
-  console.log(data);
 
   return (
     <section className="space-y-4">

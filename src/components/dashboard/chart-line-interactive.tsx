@@ -1,5 +1,6 @@
 "use client";
 
+import { formatInTimeZone } from "date-fns-tz";
 import * as React from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import type { ValueType } from "recharts/types/component/DefaultTooltipContent";
@@ -21,18 +22,18 @@ import {
 type Props = {
   data: {
     date: string;
-    total_apostado: number;
-    lucro_liquido: number;
+    total_staked: number;
+    net_profit: number;
     roi_percent: number;
   }[];
 };
 
 const chartConfig = {
-  total_apostado: {
+  total_staked: {
     label: "Total Apostado",
     color: "var(--chart-1)",
   },
-  lucro_liquido: {
+  net_profit: {
     label: "Lucro Líquido",
     color: "var(--chart-2)",
   },
@@ -42,20 +43,28 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const CHART_TIME_ZONE = "America/Sao_Paulo";
+
+function parseChartDate(value: string) {
+  return new Date(`${value}T00:00:00`);
+}
+
 export function ChartLineInteractive({ data }: Props) {
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("lucro_liquido");
+    React.useState<keyof typeof chartConfig>("total_staked");
 
   const totals = React.useMemo(() => {
     return {
-      total_apostado: data.reduce((acc, curr) => acc + curr.total_apostado, 0),
-      lucro_liquido: data.reduce((acc, curr) => acc + curr.lucro_liquido, 0),
+      total_staked: data.reduce((acc, curr) => acc + curr.total_staked, 0),
+      net_profit: data.reduce((acc, curr) => acc + curr.net_profit, 0),
       roi_percent:
         data.length > 0
           ? data.reduce((acc, curr) => acc + curr.roi_percent, 0) / data.length
           : 0,
     };
   }, [data]);
+
+  console.log(data);
 
   return (
     <Card className="py-4 sm:py-0">
@@ -70,7 +79,7 @@ export function ChartLineInteractive({ data }: Props) {
 
         {/* Botões de métricas */}
         <div className="flex">
-          {(["total_apostado", "lucro_liquido", "roi_percent"] as const).map(
+          {(["total_staked", "net_profit", "roi_percent"] as const).map(
             (key) => {
               const chart = chartConfig[key];
               return (
@@ -111,18 +120,18 @@ export function ChartLineInteractive({ data }: Props) {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="date"
+              dataKey="day"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={(value) => {
-                const d = new Date(value);
-                return d.toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "short",
-                });
-              }}
+              tickFormatter={(value: string) =>
+                formatInTimeZone(
+                  parseChartDate(value),
+                  CHART_TIME_ZONE,
+                  "dd MMM"
+                )
+              }
             />
             <ChartTooltip
               content={
@@ -130,11 +139,11 @@ export function ChartLineInteractive({ data }: Props) {
                   className="w-[150px]"
                   nameKey={chartConfig[activeChart].label}
                   labelFormatter={(value) =>
-                    new Date(value).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })
+                    formatInTimeZone(
+                      parseChartDate(String(value)),
+                      CHART_TIME_ZONE,
+                      "dd MMM yyyy"
+                    )
                   }
                   formatter={(value: ValueType) => {
                     const numericValue = Number(

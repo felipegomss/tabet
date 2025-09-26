@@ -22,7 +22,7 @@ export default async function SectionCards() {
     return <p>Erro ao carregar</p>;
   }
 
-  const { total_apostado, lucro_liquido, roi_percent, green_count, red_count } =
+  const { total_staked, net_profit, roi_percent, green_count, red_count } =
     data;
 
   return (
@@ -31,7 +31,7 @@ export default async function SectionCards() {
       <Card>
         <CardHeader>
           <CardDescription>Total Apostado</CardDescription>
-          <CardTitle>R$ {total_apostado.toFixed(2)}</CardTitle>
+          <CardTitle>R$ {total_staked.toFixed(2)}</CardTitle>
           <CardAction>
             <Badge variant="outline">
               <IconTrendingUp /> últimos 90 dias
@@ -48,13 +48,13 @@ export default async function SectionCards() {
         <CardHeader>
           <CardDescription>Lucro Líquido</CardDescription>
           <CardTitle
-            className={lucro_liquido >= 0 ? "text-green-600" : "text-red-600"}
+            className={net_profit >= 0 ? "text-green-600" : "text-red-600"}
           >
-            R$ {lucro_liquido.toFixed(2)}
+            R$ {net_profit.toFixed(2)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              {lucro_liquido >= 0 ? (
+              {net_profit >= 0 ? (
                 <>
                   <IconTrendingUp /> positivo
                 </>

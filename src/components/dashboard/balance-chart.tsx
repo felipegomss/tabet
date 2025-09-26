@@ -1,12 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import type {
-  NameType,
-  ValueType,
-} from "recharts/types/component/DefaultTooltipContent";
-
 import {
   Card,
   CardContent,
@@ -29,19 +22,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatInTimeZone } from "date-fns-tz";
+import * as React from "react";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 type Balance = {
-  dia: string; // YYYY-MM-DD
-  lucro_dia: number;
-  saldo_acumulado: number;
+  day: string; // YYYY-MM-DD
+  day_profit: number;
+  cumulative_balance: number;
 };
 
 const chartConfig = {
-  saldo_acumulado: {
+  cumulative_balance: {
     label: "Saldo Acumulado",
     color: "var(--chart-1)",
   },
-  lucro_dia: {
+  day_profit: {
     label: "Lucro do Dia",
     color: "var(--chart-2)",
   },
@@ -67,10 +67,10 @@ export function BalanceChart({ balance }: { balance: Balance[] }) {
     const startDate = new Date();
     startDate.setDate(referenceDate.getDate() - daysToSubtract);
 
-    return balance.filter((item) => new Date(item.dia) >= startDate);
+    return balance.filter(
+      (item) => new Date(`${item.day}T00:00:00`) >= startDate
+    );
   }, [balance, timeRange]);
-
-  console.log(balance);
 
   return (
     <Card className="pt-0">
@@ -105,40 +105,41 @@ export function BalanceChart({ balance }: { balance: Balance[] }) {
               <linearGradient id="fillSaldo" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-saldo_acumulado)"
+                  stopColor="var(--color-cumulative_balance)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-saldo_acumulado)"
+                  stopColor="var(--color-cumulative_balance)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
               <linearGradient id="fillLucro" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-lucro_dia)"
+                  stopColor="var(--color-day_profit)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-lucro_dia)"
+                  stopColor="var(--color-day_profit)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="dia"
+              dataKey="day"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={(value) =>
-                new Date(value).toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "short",
-                })
+              tickFormatter={(value: string) =>
+                formatInTimeZone(
+                  new Date(`${value}T00:00:00`),
+                  "America/Sao_Paulo",
+                  "dd MMM"
+                )
               }
             />
             <ChartTooltip
@@ -146,11 +147,11 @@ export function BalanceChart({ balance }: { balance: Balance[] }) {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) =>
-                    new Date(value).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })
+                    formatInTimeZone(
+                      new Date(`${value}T00:00:00`),
+                      "America/Sao_Paulo",
+                      "dd MMM yyyy"
+                    )
                   }
                   formatter={(value: ValueType, name: NameType) => {
                     const resolvedValue = Array.isArray(value)
@@ -158,7 +159,7 @@ export function BalanceChart({ balance }: { balance: Balance[] }) {
                       : value;
                     const key = String(name);
                     const label =
-                      key === "saldo_acumulado"
+                      key === "cumulative_balance"
                         ? " Saldo Acumulado"
                         : " Lucro do Dia";
                     return [formatCurrencyValue(resolvedValue ?? 0), label];
@@ -167,17 +168,17 @@ export function BalanceChart({ balance }: { balance: Balance[] }) {
               }
             />
             <Area
-              dataKey="saldo_acumulado"
+              dataKey="cumulative_balance"
               type="monotone"
               fill="url(#fillSaldo)"
-              stroke="var(--color-saldo_acumulado)"
+              stroke="var(--color-cumulative_balance)"
               strokeWidth={2}
             />
             <Area
-              dataKey="lucro_dia"
+              dataKey="day_profit"
               type="monotone"
               fill="url(#fillLucro)"
-              stroke="var(--color-lucro_dia)"
+              stroke="var(--color-day_profit)"
               strokeWidth={2}
             />
             <ChartLegend content={<ChartLegendContent />} />
