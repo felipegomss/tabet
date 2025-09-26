@@ -4,7 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 import { betSchema, type BetFormValues } from "./validations/bet";
 
 interface InsertBetPayload {
-  p_user_id: string;
   p_house: string;
   p_title: string;
   p_market: string;
@@ -44,16 +43,14 @@ export async function createBetAction(values: BetFormValues) {
     throw new Error("Usuário não autenticado");
   }
 
-  // prepara payload pro RPC
   const payload: InsertBetPayload = {
-    p_user_id: user.id,
     p_house: house,
     p_title: title,
     p_market: market ?? "",
     p_event_at: event_at.toISOString(),
     p_odd: odd,
-    p_result: result,
     p_units: units,
+    p_result: result,
   };
 
   const { data, error } = await supabase.rpc("insert_bet", payload);

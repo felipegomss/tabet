@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Bet } from "./bets-datatable";
 import { DatePicker } from "./date-picker";
+import { HouseSelect } from "./house-select";
 import { MaskedNumberInput } from "./ui/masked-number-input";
 import {
   Select,
@@ -87,10 +88,9 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
     >
       <div className="space-y-2 sm:col-span-2">
         <Label>Casa</Label>
-        <input
-          {...form.register("house")}
-          className="w-full rounded-md border px-2 py-2"
-          placeholder="Casa de apostas"
+        <HouseSelect
+          value={form.watch("house")}
+          onChange={(value) => form.setValue("house", value)}
         />
         {errors.house && (
           <p className="text-xs text-red-500">{errors.house.message}</p>

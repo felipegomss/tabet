@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { deleteBetAction, updateBetResultAction } from "@/lib/bet-actions";
+import { cn } from "@/lib/utils";
 import {
   ColumnDef,
   flexRender,
@@ -64,6 +65,22 @@ export type Bet = {
 };
 
 type BetResult = Bet["result"];
+
+const RESULT_BADGE_VARIANT: Record<BetResult, "default" | "secondary" | "destructive" | "outline" | "info" | "warning"> = {
+  green: "default",
+  red: "destructive",
+  refund: "secondary",
+  cashout: "info",
+  pending: "warning",
+};
+
+const RESULT_ICON_COLOR: Record<BetResult, string> = {
+  green: "text-primary",
+  red: "text-destructive",
+  refund: "text-secondary-foreground",
+  cashout: "text-blue-500",
+  pending: "text-yellow-500",
+};
 
 interface BetsTableProps {
   data: Bet[];
@@ -138,30 +155,11 @@ export function BetsDataTable({
       accessorKey: "result",
       header: "Resultado",
       cell: ({ row }) => {
-        const result = row.getValue("result") as
-          | "pending"
-          | "green"
-          | "red"
-          | "refund"
-          | "cashout";
-        const variants: Record<
-          string,
-          | "default"
-          | "secondary"
-          | "destructive"
-          | "outline"
-          | "info"
-          | "warning"
-        > = {
-          green: "default",
-          red: "destructive",
-          refund: "secondary",
-          cashout: "info",
-          pending: "warning",
-        };
+        const result = row.getValue("result") as BetResult;
+        const variant = RESULT_BADGE_VARIANT[result] ?? "outline";
 
         return (
-          <Badge variant={variants[result] ?? "outline"}>
+          <Badge variant={variant}>
             {result.charAt(0).toUpperCase() + result.slice(1)}
           </Badge>
         );
@@ -187,33 +185,66 @@ export function BetsDataTable({
           bet.result === "pending"
             ? [
                 {
-                  result: "green",
+                  result: "green" as const,
                   label: "Marcar como Green",
-                  icon: <Check className="h-4 w-4 text-green-600" />,
+                  icon: (
+                    <Check
+                      className={cn(
+                        "h-4 w-4",
+                        RESULT_ICON_COLOR.green ?? "text-foreground"
+                      )}
+                    />
+                  ),
                 },
                 {
-                  result: "refund",
+                  result: "refund" as const,
                   label: "Marcar como Refund",
-                  icon: <RefreshCcw className="h-4 w-4 text-blue-600" />,
+                  icon: (
+                    <RefreshCcw
+                      className={cn(
+                        "h-4 w-4",
+                        RESULT_ICON_COLOR.refund ?? "text-foreground"
+                      )}
+                    />
+                  ),
                 },
                 {
-                  result: "red",
+                  result: "red" as const,
                   label: "Marcar como Red",
-                  icon: <X className="h-4 w-4 text-red-600" />,
+                  icon: (
+                    <X
+                      className={cn(
+                        "h-4 w-4",
+                        RESULT_ICON_COLOR.red ?? "text-foreground"
+                      )}
+                    />
+                  ),
                 },
                 {
-                  result: "cashout",
+                  result: "cashout" as const,
                   label: "Marcar como Cashout",
                   icon: (
-                    <BanknoteArrowDown className="h-4 w-4 text-yellow-600" />
+                    <BanknoteArrowDown
+                      className={cn(
+                        "h-4 w-4",
+                        RESULT_ICON_COLOR.cashout ?? "text-foreground"
+                      )}
+                    />
                   ),
                 },
               ]
             : [
                 {
-                  result: "pending",
+                  result: "pending" as const,
                   label: "Voltar para Pending",
-                  icon: <RotateCcw className="h-4 w-4 text-gray-500" />,
+                  icon: (
+                    <RotateCcw
+                      className={cn(
+                        "h-4 w-4",
+                        RESULT_ICON_COLOR.pending ?? "text-foreground"
+                      )}
+                    />
+                  ),
                 },
               ];
 
