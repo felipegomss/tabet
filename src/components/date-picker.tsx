@@ -18,12 +18,29 @@ interface DatePickerProps {
 }
 
 const TIME_ZONE = "America/Sao_Paulo";
+const DAYS_LIMIT = 90;
+
+function getEarliestSelectableDate() {
+  const zonedTodayString = formatInTimeZone(
+    new Date(),
+    TIME_ZONE,
+    "yyyy-MM-dd'T'00:00:00xxx"
+  );
+  const zonedToday = new Date(zonedTodayString);
+  zonedToday.setDate(zonedToday.getDate() - (DAYS_LIMIT - 1));
+  return zonedToday;
+}
 
 export function DatePicker({ value, onChange }: DatePickerProps) {
   const formattedDate = React.useMemo(() => {
     if (!value) return null;
     return formatInTimeZone(value, TIME_ZONE, "dd/MM/yyyy");
   }, [value]);
+
+  const minSelectableDate = React.useMemo(
+    () => getEarliestSelectableDate(),
+    []
+  );
 
   return (
     <Popover>
@@ -43,6 +60,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           selected={value}
           onSelect={onChange}
           timeZone={TIME_ZONE}
+          disabled={{ before: new Date(minSelectableDate) }}
           initialFocus
         />
       </PopoverContent>

@@ -13,6 +13,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { Bet } from "./bets-datatable";
 import { DatePicker } from "./date-picker";
 import { HouseSelect } from "./house-select";
+import { Input } from "./ui/input";
 import { MaskedNumberInput } from "./ui/masked-number-input";
 import {
   Select,
@@ -101,7 +102,9 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
       className="grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2"
     >
       <div className="space-y-2 sm:col-span-2">
-        <Label>Casa</Label>
+        <Label aria-required htmlFor="house">
+          Casa
+        </Label>
         <HouseSelect
           value={form.watch("house")}
           onChange={(value) => form.setValue("house", value)}
@@ -112,28 +115,28 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
       </div>
 
       <div className="space-y-2 sm:col-span-2">
-        <Label>Evento</Label>
-        <input
-          {...form.register("title")}
-          className="w-full rounded-md border px-2 py-2"
-          placeholder="Evento"
-        />
+        <Label aria-required htmlFor="title">
+          Evento
+        </Label>
+        <Input {...form.register("title")} placeholder="Evento" id="title" />
         {errors.title && (
           <p className="text-xs text-red-500">{errors.title.message}</p>
         )}
       </div>
 
       <div className="space-y-2 sm:col-span-2">
-        <Label>Mercado</Label>
-        <input
+        <Label htmlFor="market">Mercado</Label>
+        <Input
           {...form.register("market")}
-          className="w-full rounded-md border px-2 py-2"
           placeholder="Mercado (opcional)"
+          id="market"
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Data do Evento</Label>
+        <Label aria-required htmlFor="event_at">
+          Data do Evento
+        </Label>
         <DatePicker
           value={form.watch("event_at")}
           onChange={(date) => {
@@ -147,11 +150,15 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label>Odd</Label>
+        <Label aria-required htmlFor="odd">
+          Odd
+        </Label>
         <MaskedNumberInput
+          aria-required
           value={odd}
           onValueChange={(val) => form.setValue("odd", val ?? 0)}
           decimals={2}
+          id="odd"
         />
         {errors.odd && (
           <p className="text-xs text-red-500">{errors.odd.message}</p>
@@ -159,8 +166,11 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label>Unidades</Label>
+        <Label aria-required htmlFor="units">
+          Unidades
+        </Label>
         <MaskedNumberInput
+          aria-required
           value={units}
           onValueChange={(val) => {
             const u = Number((val ?? 0).toFixed(3));
@@ -168,6 +178,7 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           }}
           suffix="ᙀ"
           decimals={3}
+          id="units"
         />
         {errors.units && (
           <p className="text-xs text-red-500">{errors.units.message}</p>
@@ -175,8 +186,11 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label>Valor (R$)</Label>
+        <Label aria-required htmlFor="entryAmount">
+          Valor (R$)
+        </Label>
         <MaskedNumberInput
+          aria-required
           value={entryAmount}
           onValueChange={(val) => {
             if (!effectiveStake) return;
@@ -185,12 +199,16 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           }}
           prefix="R$"
           decimals={2}
+          id="entryAmount"
         />
       </div>
 
       <div className="space-y-2 sm:col-span-2">
-        <Label>Resultado</Label>
+        <Label aria-required htmlFor="result">
+          Resultado
+        </Label>
         <Select
+          aria-required
           value={form.watch("result")}
           onValueChange={(val) =>
             form.setValue("result", val as BetFormValues["result"])

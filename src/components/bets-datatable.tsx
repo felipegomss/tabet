@@ -42,7 +42,13 @@ import { BetForm } from "./bet-form";
 import { ConfirmActionModal } from "./confirm-action-modal";
 import { DatePicker } from "./date-picker";
 import { Badge } from "./ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -388,11 +394,7 @@ export function BetsDataTable({
 
         <div className="w-[250px]">
           <DatePicker
-            value={
-              filterDate
-                ? new Date(`${filterDate}T00:00:00`)
-                : undefined
-            }
+            value={filterDate ? new Date(`${filterDate}T00:00:00`) : undefined}
             onChange={(date) =>
               updateParams({
                 date: date
@@ -490,6 +492,9 @@ export function BetsDataTable({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editar Aposta</DialogTitle>
+            <DialogDescription>
+              Preencha os campos abaixo para editar a aposta.
+            </DialogDescription>
           </DialogHeader>
           <BetForm
             onSuccess={() => setEditModalState(null)}

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -40,6 +41,9 @@ export function SiteHeader() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nova Aposta</DialogTitle>
+            <DialogDescription>
+              Preencha os campos abaixo para registrar uma nova aposta.
+            </DialogDescription>
           </DialogHeader>
           <BetForm onSuccess={() => setOpen(false)} />
         </DialogContent>
