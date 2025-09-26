@@ -136,9 +136,12 @@ export function BetForm({
         <Label>Unidades</Label>
         <MaskedNumberInput
           value={units}
-          onValueChange={(val) => form.setValue("units", val ?? 0)}
+          onValueChange={(val) => {
+            const unitsCalc = (val ?? 0) / stake || 0;
+            form.setValue("units", Number(unitsCalc.toFixed(3)));
+          }}
           suffix="ᙀ"
-          decimals={3}
+          decimals={2}
         />
         {errors.units && (
           <p className="text-xs text-red-500">{errors.units.message}</p>
