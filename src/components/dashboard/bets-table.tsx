@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatInTimeZone } from "date-fns-tz";
 
 type Bet = {
   id: string;
@@ -63,13 +64,11 @@ export function BetsTable({
                 <TableCell>{bet.title}</TableCell>
                 <TableCell>{bet.house}</TableCell>
                 <TableCell>
-                  {new Date(bet.event_at).toLocaleString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatInTimeZone(
+                    bet.event_at,
+                    "America/Sao_Paulo",
+                    "dd/MM/yyyy"
+                  )}
                 </TableCell>
                 <TableCell>{bet.odd.toFixed(2)}</TableCell>
                 <TableCell>R$ {bet.entry_amount.toFixed(2)}</TableCell>
