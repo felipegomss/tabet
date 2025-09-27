@@ -63,7 +63,7 @@ export function SummaryCards({
         <CardHeader>
           <CardDescription>Lucro Líquido</CardDescription>
           <CardTitle
-            className={lucro_liquido >= 0 ? "text-green-600" : "text-red-600"}
+            className={lucro_liquido >= 0 ? "text-primary" : "text-destructive"}
           >
             R$ {lucro_liquido.toFixed(2)}
           </CardTitle>
@@ -91,7 +91,7 @@ export function SummaryCards({
         <CardHeader>
           <CardDescription>ROI</CardDescription>
           <CardTitle
-            className={roi_percent >= 0 ? "text-green-600" : "text-red-600"}
+            className={roi_percent >= 0 ? "text-primary" : "text-destructive"}
           >
             {roi_percent.toFixed(2)}%
           </CardTitle>
@@ -168,7 +168,7 @@ export function SummaryCards({
       <Card>
         <CardHeader>
           <CardDescription>Maior Green</CardDescription>
-          <CardTitle className="text-green-600">
+          <CardTitle className="text-primary">
             +R$ {maior_green.toFixed(2)}
           </CardTitle>
           <CardAction>
@@ -184,7 +184,7 @@ export function SummaryCards({
       <Card>
         <CardHeader>
           <CardDescription>Maior Red</CardDescription>
-          <CardTitle className="text-red-600">
+          <CardTitle className="text-destructive">
             R$ {maior_red.toFixed(2)}
           </CardTitle>
           <CardAction>

@@ -18,6 +18,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { deleteBetAction, updateBetResultAction } from "@/lib/bet-actions";
+import {
+  BET_RESULT_BADGE_VARIANT,
+  BET_RESULT_ICON_COLOR,
+  BetResult,
+} from "@/lib/bet-constants";
 import { cn } from "@/lib/utils";
 import {
   ColumnDef,
@@ -69,28 +74,7 @@ export type Bet = {
   odd: number;
   entry_amount: number;
   profit_loss: number;
-  result: "pending" | "green" | "red" | "refund" | "cashout";
-};
-
-type BetResult = Bet["result"];
-
-const RESULT_BADGE_VARIANT: Record<
-  BetResult,
-  "default" | "secondary" | "destructive" | "outline" | "info" | "warning"
-> = {
-  green: "default",
-  red: "destructive",
-  refund: "secondary",
-  cashout: "info",
-  pending: "warning",
-};
-
-const RESULT_ICON_COLOR: Record<BetResult, string> = {
-  green: "text-primary",
-  red: "text-destructive",
-  refund: "text-secondary-foreground",
-  cashout: "text-blue-500",
-  pending: "text-yellow-500",
+  result: BetResult;
 };
 
 const DATE_FILTER_TIME_ZONE = "America/Sao_Paulo";
@@ -159,7 +143,7 @@ export function BetsDataTable({
       cell: ({ row }) => {
         const val = Number(row.getValue("profit_loss"));
         return (
-          <span className={val >= 0 ? "text-green-600" : "text-red-600"}>
+          <span className={val >= 0 ? "text-primary" : "text-destructive"}>
             R$ {val.toFixed(2)}
           </span>
         );
@@ -170,7 +154,7 @@ export function BetsDataTable({
       header: "Resultado",
       cell: ({ row }) => {
         const result = row.getValue("result") as BetResult;
-        const variant = RESULT_BADGE_VARIANT[result] ?? "outline";
+        const variant = BET_RESULT_BADGE_VARIANT[result] ?? "outline";
         const isLoading = loadingBetId === row.original.id;
 
         return (
@@ -207,7 +191,7 @@ export function BetsDataTable({
                     <Check
                       className={cn(
                         "h-4 w-4",
-                        RESULT_ICON_COLOR.green ?? "text-foreground"
+                        BET_RESULT_ICON_COLOR.green ?? "text-foreground"
                       )}
                     />
                   ),
@@ -219,7 +203,7 @@ export function BetsDataTable({
                     <RefreshCcw
                       className={cn(
                         "h-4 w-4",
-                        RESULT_ICON_COLOR.refund ?? "text-foreground"
+                        BET_RESULT_ICON_COLOR.refund ?? "text-foreground"
                       )}
                     />
                   ),
@@ -231,7 +215,7 @@ export function BetsDataTable({
                     <X
                       className={cn(
                         "h-4 w-4",
-                        RESULT_ICON_COLOR.red ?? "text-foreground"
+                        BET_RESULT_ICON_COLOR.red ?? "text-foreground"
                       )}
                     />
                   ),
@@ -243,7 +227,7 @@ export function BetsDataTable({
                     <BanknoteArrowDown
                       className={cn(
                         "h-4 w-4",
-                        RESULT_ICON_COLOR.cashout ?? "text-foreground"
+                        BET_RESULT_ICON_COLOR.cashout ?? "text-foreground"
                       )}
                     />
                   ),
@@ -257,7 +241,7 @@ export function BetsDataTable({
                     <RotateCcw
                       className={cn(
                         "h-4 w-4",
-                        RESULT_ICON_COLOR.pending ?? "text-foreground"
+                        BET_RESULT_ICON_COLOR.pending ?? "text-foreground"
                       )}
                     />
                   ),

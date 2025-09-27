@@ -53,7 +53,7 @@ export default async function ForgotPasswordPage({
                 status === "error"
                   ? "text-destructive"
                   : status === "success"
-                  ? "text-green-600"
+                  ? "text-primary"
                   : "text-muted-foreground"
               }`}
               role="status"

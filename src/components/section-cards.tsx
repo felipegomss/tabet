@@ -48,7 +48,7 @@ export default async function SectionCards() {
         <CardHeader>
           <CardDescription>Lucro Líquido</CardDescription>
           <CardTitle
-            className={net_profit >= 0 ? "text-green-600" : "text-red-600"}
+            className={net_profit >= 0 ? "text-primary" : "text-destructive"}
           >
             R$ {net_profit.toFixed(2)}
           </CardTitle>
@@ -76,7 +76,7 @@ export default async function SectionCards() {
         <CardHeader>
           <CardDescription>ROI</CardDescription>
           <CardTitle
-            className={roi_percent >= 0 ? "text-green-600" : "text-red-600"}
+            className={roi_percent >= 0 ? "text-primary" : "text-destructive"}
           >
             {roi_percent.toFixed(2)}%
           </CardTitle>

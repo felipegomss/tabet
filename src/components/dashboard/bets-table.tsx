@@ -18,8 +18,19 @@ type Bet = {
   event_at: string;
   odd: number;
   entry_amount: number;
-  result: string;
+  result: "pending" | "green" | "red" | "refund" | "cashout";
   profit_loss: number;
+};
+
+const RESULT_BADGE_VARIANT: Record<
+  Bet["result"],
+  "default" | "secondary" | "destructive" | "outline" | "info" | "warning"
+> = {
+  green: "default",
+  red: "destructive",
+  refund: "warning",
+  cashout: "info",
+  pending: "outline",
 };
 
 export function BetsTable({
@@ -64,20 +75,14 @@ export function BetsTable({
                 <TableCell>R$ {bet.entry_amount.toFixed(2)}</TableCell>
                 <TableCell>
                   <Badge
-                    variant={
-                      bet.result === "green"
-                        ? "default"
-                        : bet.result === "red"
-                        ? "destructive"
-                        : "outline"
-                    }
+                    variant={RESULT_BADGE_VARIANT[bet.result] ?? "outline"}
                   >
-                    {bet.result}
+                    {bet.result.charAt(0).toUpperCase() + bet.result.slice(1)}
                   </Badge>
                 </TableCell>
                 <TableCell
                   className={
-                    bet.profit_loss >= 0 ? "text-green-600" : "text-red-600"
+                    bet.profit_loss >= 0 ? "text-primary" : "text-destructive"
                   }
                 >
                   R$ {bet.profit_loss.toFixed(2)}

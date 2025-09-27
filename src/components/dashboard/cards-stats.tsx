@@ -43,8 +43,8 @@ function TrendCard({
   chartClassName,
 }: TrendCardProps) {
   const toneClassMap: Record<TrendTone, string> = {
-    positive: "text-green-600",
-    negative: "text-red-600",
+    positive: "text-primary",
+    negative: "text-destructive",
     neutral: "text-muted-foreground",
   };
 
