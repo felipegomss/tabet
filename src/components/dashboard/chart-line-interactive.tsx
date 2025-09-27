@@ -64,8 +64,6 @@ export function ChartLineInteractive({ data }: Props) {
     };
   }, [data]);
 
-  console.log(data);
-
   return (
     <Card className="py-4 sm:py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">

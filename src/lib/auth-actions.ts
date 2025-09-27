@@ -98,11 +98,6 @@ export async function sendPasswordResetAction(formData: FormData) {
   const supabase = await createClient();
   const redirectTo = new URL("/reset-password", getAppUrl()).toString();
 
-  console.log("[sendPasswordResetAction] requesting password reset", {
-    email,
-    redirectTo,
-  });
-
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo,
   });
@@ -116,8 +111,6 @@ export async function sendPasswordResetAction(formData: FormData) {
     );
     return redirect(`/forgot-password?${nextParams.toString()}`);
   }
-
-  console.log("[sendPasswordResetAction] success for", email);
 
   nextParams.set("status", "success");
   nextParams.set(
