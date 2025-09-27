@@ -101,7 +101,7 @@ interface BetsTableProps {
   pageSize: number;
   pageIndex: number;
   filterResult?: string;
-  filterTitle?: string;
+  search?: string;
   filterDate?: string;
 }
 
@@ -111,7 +111,7 @@ export function BetsDataTable({
   pageSize,
   pageIndex,
   filterResult,
-  filterTitle,
+  search,
   filterDate,
 }: BetsTableProps) {
   const router = useRouter();
@@ -374,7 +374,7 @@ export function BetsDataTable({
         <div className="flex gap-2">
           <Input
             placeholder="Filtrar por evento..."
-            defaultValue={filterTitle ?? ""}
+            defaultValue={search ?? ""}
             onChange={(e) => updateParams({ title: e.target.value, page: 0 })}
             className="max-w-xs"
           />

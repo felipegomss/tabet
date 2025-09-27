@@ -17,7 +17,7 @@ export default async function BetsPage({ searchParams }: Props) {
   const pageSize = 12;
   const pageIndex = Number(resolvedSearchParams.page ?? 0);
   const filterResult = resolvedSearchParams.result;
-  const filterTitle = resolvedSearchParams.title;
+  const search = resolvedSearchParams.title;
   const date = resolvedSearchParams.date ?? undefined;
 
   let query = supabase
@@ -30,7 +30,12 @@ export default async function BetsPage({ searchParams }: Props) {
     .order("house", { ascending: true })
     .order("event_at", { ascending: false });
 
-  if (filterTitle) query = query.ilike("title", `%${filterTitle}%`);
+  if (search) {
+    const wildcardSearch = `%${search}%`;
+    query = query.or(
+      `title.ilike.${wildcardSearch},market.ilike.${wildcardSearch}`
+    );
+  }
   if (filterResult) query = query.eq("result", filterResult);
   if (date) {
     const startDate = new Date(`${date}T00:00:00`);
@@ -61,7 +66,7 @@ export default async function BetsPage({ searchParams }: Props) {
         pageSize={pageSize}
         pageIndex={pageIndex}
         filterResult={filterResult}
-        filterTitle={filterTitle}
+        search={search}
         filterDate={date}
       />
     </section>
