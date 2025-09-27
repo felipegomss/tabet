@@ -74,7 +74,10 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
             >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Tabet.</span>
+                <span className="text-base font-semibold">
+                  Ta
+                  <span className="text-primary">bet.</span>
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

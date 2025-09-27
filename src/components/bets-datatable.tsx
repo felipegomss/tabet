@@ -30,6 +30,7 @@ import {
   BanknoteArrowDown,
   Check,
   Edit,
+  Loader2,
   MoreHorizontal,
   RefreshCcw,
   RotateCcw,
@@ -125,6 +126,7 @@ export function BetsDataTable({
   const [editModalState, setEditModalState] = useState<{
     betId: string;
   } | null>(null);
+  const [loadingBetId, setLoadingBetId] = useState<string | null>(null);
 
   const columns: ColumnDef<Bet>[] = [
     {
@@ -169,10 +171,12 @@ export function BetsDataTable({
       cell: ({ row }) => {
         const result = row.getValue("result") as BetResult;
         const variant = RESULT_BADGE_VARIANT[result] ?? "outline";
+        const isLoading = loadingBetId === row.original.id;
 
         return (
           <Badge variant={variant}>
             {result.charAt(0).toUpperCase() + result.slice(1)}
+            {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
           </Badge>
         );
       },
@@ -323,19 +327,25 @@ export function BetsDataTable({
 
     const { betId, result } = modalState;
 
+    setLoadingBetId(betId);
     startTransition(async () => {
-      if (result === "delete") {
-        await deleteBetAction(betId);
-      } else {
-        await updateBetResultAction(
-          betId,
-          result,
-          result === "cashout" ? cashoutValue : undefined
-        );
+      try {
+        if (result === "delete") {
+          await deleteBetAction(betId);
+        } else {
+          await updateBetResultAction(
+            betId,
+            result,
+            result === "cashout" ? cashoutValue : undefined
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setModalState(null);
+        router.refresh();
+        setLoadingBetId(null);
       }
-
-      setModalState(null);
-      router.refresh();
     });
   };
 

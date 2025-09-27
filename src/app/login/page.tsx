@@ -1,10 +1,9 @@
-import { GalleryVerticalEnd } from "lucide-react";
-
 import { LoginForm } from "@/components/login-form";
 import {
   getFirstSearchParamValue,
   getSafeRedirectPath,
 } from "@/utils/navigation";
+import { IconInnerShadowTop } from "@tabler/icons-react";
 
 type LoginPageProps = {
   searchParams?: Promise<{
@@ -25,9 +24,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="flex w-full max-w-sm flex-col gap-6">
         <a href="#" className="flex items-center gap-2 self-center font-medium">
           <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-            <GalleryVerticalEnd className="size-4" />
+            <IconInnerShadowTop className="!size-5" />
           </div>
-          Tabet.
+          <span>
+            Ta<span className="text-primary">bet.</span>
+          </span>
         </a>
         <LoginForm message={message} redirectTo={redirectTo} />
       </div>
