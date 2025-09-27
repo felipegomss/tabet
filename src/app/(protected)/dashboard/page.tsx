@@ -75,11 +75,17 @@ export default async function DashboardPage() {
         <CardsStats
           accuracy={(accuracy.data ?? []).map((d) => ({
             date: d.day,
-            value: Number(d.accuracy ?? 0),
+            value:
+              typeof d.accuracy === "number" || d.accuracy === null
+                ? d.accuracy
+                : Number(d.accuracy),
           }))}
           avgStake={(avgStake.data ?? []).map((d) => ({
             date: d.day,
-            value: Number(d.avg_stake ?? 0),
+            value:
+              typeof d.avg_stake === "number" || d.avg_stake === null
+                ? d.avg_stake
+                : Number(d.avg_stake),
           }))}
         />
       </div>
