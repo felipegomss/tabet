@@ -373,7 +373,7 @@ export function BetsDataTable({
       <div className="flex flex-wrap gap-2 justify-between">
         <div className="flex gap-2">
           <Input
-            placeholder="Filtrar por evento..."
+            placeholder="Filtrar por evento ou mercado..."
             defaultValue={search ?? ""}
             onChange={(e) => updateParams({ title: e.target.value, page: 0 })}
             className="max-w-xs"
