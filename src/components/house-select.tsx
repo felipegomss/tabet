@@ -18,27 +18,19 @@ import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 
-const bettingHouses = [
-  { value: "Superbet", label: "Superbet" },
-  { value: "Betfast", label: "Betfast" },
-  { value: "Bet7k", label: "Bet7k" },
-  { value: "Bet365", label: "Bet365" },
-  { value: "Esportiva", label: "Esportiva" },
-];
-
 export function HouseSelect({
   value,
   onChange,
+  houses,
 }: {
   value: string;
   onChange: (value: string) => void;
+  houses: string[];
 }) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
 
-  // Exibe o valor selecionado ou digitado
-  const displayLabel =
-    bettingHouses.find((house) => house.value === value)?.label || value;
+  const displayLabel = houses.find((h) => h === value) || value;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -63,34 +55,42 @@ export function HouseSelect({
           />
           <CommandList>
             <CommandEmpty>
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => {
-                  onChange(inputValue);
-                  setInputValue(inputValue);
-                  setOpen(false);
-                }}
-              >
-                Usar &quot;{inputValue}&quot;
-              </Button>
-            </CommandEmpty>
-            <CommandGroup>
-              {bettingHouses.map((house) => (
-                <CommandItem
-                  key={house.value}
-                  value={house.value}
-                  onSelect={(currentValue) => {
-                    onChange(currentValue);
+              {inputValue ? (
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    onChange(inputValue);
                     setInputValue("");
                     setOpen(false);
                   }}
                 >
-                  {house.label}
+                  Usar &quot;{inputValue}&quot;
+                </Button>
+              ) : (
+                <p className="text-center text-xs text-muted-foreground">
+                  Nenhuma casa encontrada,
+                  <br />
+                  digite para adicionar
+                </p>
+              )}
+            </CommandEmpty>
+            <CommandGroup>
+              {houses.map((house) => (
+                <CommandItem
+                  key={house}
+                  value={house}
+                  onSelect={() => {
+                    onChange(house);
+                    setInputValue("");
+                    setOpen(false);
+                  }}
+                >
+                  {house}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === house.value ? "opacity-100" : "opacity-0"
+                      value === house ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

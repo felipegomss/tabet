@@ -1,6 +1,11 @@
 "use client";
 
-import { IconDotsVertical, IconLogout, IconMoon, IconSun } from "@tabler/icons-react";
+import {
+  IconDotsVertical,
+  IconLogout,
+  IconMoon,
+  IconSun,
+} from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -18,11 +23,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { DollarSign } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
 import { useUserSettings } from "@/providers/user-settings-provider";
-import { useState } from "react";
+import { DollarSign, Home } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useState } from "react";
+import { HouseModal } from "./house-modal";
 import { StakeModal } from "./stake-modal";
 
 export function NavUser({
@@ -36,6 +42,7 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const { stakeValue } = useUserSettings();
   const [openStake, setOpenStake] = useState(stakeValue == null);
+  const [openHouses, setOpenHouses] = useState(false);
   const { setTheme, theme } = useTheme();
 
   return (
@@ -109,6 +116,10 @@ export function NavUser({
                 <DollarSign className="mr-2 h-4 w-4" />
                 Stake
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setOpenHouses(true)}>
+                <Home className="mr-2 h-4 w-4" />
+                Casas
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -124,10 +135,8 @@ export function NavUser({
       </SidebarMenuItem>
 
       {/* Passa controle para o modal */}
-      <StakeModal
-        open={openStake}
-        onOpenChange={setOpenStake}
-      />
+      <StakeModal open={openStake} onOpenChange={setOpenStake} />
+      <HouseModal open={openHouses} onOpenChange={setOpenHouses} />
     </SidebarMenu>
   );
 }

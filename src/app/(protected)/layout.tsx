@@ -26,15 +26,17 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   let stakeValue: number | null = null;
+  let bettingHouses: string[] = [];
 
   if (user) {
     const { data: settings } = await supabase
       .from("user_settings")
-      .select("stake_value")
+      .select("stake_value, betting_houses")
       .eq("user_id", user.id)
       .single();
 
     stakeValue = settings?.stake_value ?? null;
+    bettingHouses = settings?.betting_houses ?? [];
   }
 
   if (!user) {
@@ -42,7 +44,11 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <UserSettingsProvider userId={user.id} stakeValue={stakeValue}>
+    <UserSettingsProvider
+      userId={user.id}
+      stakeValue={stakeValue}
+      bettingHouses={bettingHouses}
+    >
       <SidebarProvider style={sidebarStyles}>
         <AppSidebar
           variant="inset"
@@ -53,13 +59,13 @@ export default async function ProtectedLayout({
         />
         <SidebarInset>
           <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-              {children}
+          <div className="flex flex-1 flex-col">
+            <div className="@container/main flex flex-1 flex-col gap-2">
+              <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+                {children}
+              </div>
             </div>
           </div>
-        </div>
         </SidebarInset>
       </SidebarProvider>
     </UserSettingsProvider>

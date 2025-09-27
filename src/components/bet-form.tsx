@@ -3,6 +3,7 @@
 import { SubmitButton } from "@/components/submit-button";
 import { Label } from "@/components/ui/label";
 import { createBetAction, updateBetAction } from "@/lib/bet-actions";
+import { updateUserHouses } from "@/lib/user-settings-actions";
 import { betSchema, type BetFormValues } from "@/lib/validations/bet";
 import { useUserSettings } from "@/providers/user-settings-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,7 +41,9 @@ interface BetFormProps {
 }
 
 export function BetForm({ onSuccess, bet }: BetFormProps) {
-  const { userId, stakeValue } = useUserSettings();
+  const { userId, stakeValue, bettingHouses, setBettingHouses } =
+    useUserSettings();
+
   const form = useForm<BetFormValues>({
     resolver: zodResolver(betSchema),
     defaultValues: {
@@ -80,11 +83,22 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
       if (!userId) {
         throw new Error("Usuário não autenticado");
       }
+
       if (bet?.id) {
         await updateBetAction({ ...values, id: bet.id });
       } else {
         await createBetAction(values);
       }
+
+      const updatedHouses = await updateUserHouses(
+        userId,
+        values.house,
+        stakeValue
+      );
+      if (updatedHouses) {
+        setBettingHouses(updatedHouses);
+      }
+
       router.refresh();
       onSuccess?.();
     } catch (err) {
@@ -108,9 +122,10 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
         <HouseSelect
           value={form.watch("house")}
           onChange={(value) => form.setValue("house", value)}
+          houses={bettingHouses}
         />
         {errors.house && (
-          <p className="text-xs text-red-500">{errors.house.message}</p>
+          <p className="text-xs text-destructive">{errors.house.message}</p>
         )}
       </div>
 
@@ -120,7 +135,7 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
         </Label>
         <Input {...form.register("title")} placeholder="Evento" id="title" />
         {errors.title && (
-          <p className="text-xs text-red-500">{errors.title.message}</p>
+          <p className="text-xs text-destructive">{errors.title.message}</p>
         )}
       </div>
 
@@ -145,7 +160,7 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           }}
         />
         {errors.event_at && (
-          <p className="text-xs text-red-500">{errors.event_at.message}</p>
+          <p className="text-xs text-destructive">{errors.event_at.message}</p>
         )}
       </div>
 
@@ -161,7 +176,7 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           id="odd"
         />
         {errors.odd && (
-          <p className="text-xs text-red-500">{errors.odd.message}</p>
+          <p className="text-xs text-destructive">{errors.odd.message}</p>
         )}
       </div>
 
@@ -181,7 +196,7 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           id="units"
         />
         {errors.units && (
-          <p className="text-xs text-red-500">{errors.units.message}</p>
+          <p className="text-xs text-destructive">{errors.units.message}</p>
         )}
       </div>
 
@@ -226,7 +241,7 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           </SelectContent>
         </Select>
         {errors.result && (
-          <p className="text-xs text-red-500">{errors.result.message}</p>
+          <p className="text-xs text-destructive">{errors.result.message}</p>
         )}
       </div>
 

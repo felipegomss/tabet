@@ -3,9 +3,7 @@
 import {
   createContext,
   type ReactNode,
-  useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -14,6 +12,8 @@ interface UserSettingsContextValue {
   userId: string;
   stakeValue: number | null;
   setStakeValue: (value: number | null) => void;
+  bettingHouses: string[];
+  setBettingHouses: (value: string[]) => void;
 }
 
 const UserSettingsContext = createContext<UserSettingsContextValue | undefined>(
@@ -23,31 +23,28 @@ const UserSettingsContext = createContext<UserSettingsContextValue | undefined>(
 interface UserSettingsProviderProps {
   userId: string;
   stakeValue: number | null;
+  bettingHouses: string[];
   children: ReactNode;
 }
 
 export function UserSettingsProvider({
   userId,
-  stakeValue,
+  stakeValue: initialStake,
+  bettingHouses: initialHouses,
   children,
 }: UserSettingsProviderProps) {
-  const [value, setValue] = useState({ userId, stakeValue });
-
-  useEffect(() => {
-    setValue({ userId, stakeValue });
-  }, [userId, stakeValue]);
-
-  const setStakeValue = useCallback((nextStake: number | null) => {
-    setValue((prev) => ({ ...prev, stakeValue: nextStake }));
-  }, []);
+  const [stakeValue, setStakeValue] = useState<number | null>(initialStake);
+  const [bettingHouses, setBettingHouses] = useState<string[]>(initialHouses);
 
   const contextValue = useMemo(
     () => ({
-      userId: value.userId,
-      stakeValue: value.stakeValue,
+      userId,
+      stakeValue,
       setStakeValue,
+      bettingHouses,
+      setBettingHouses,
     }),
-    [value.userId, value.stakeValue, setStakeValue]
+    [userId, stakeValue, bettingHouses]
   );
 
   return (
