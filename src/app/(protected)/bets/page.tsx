@@ -33,7 +33,7 @@ export default async function BetsPage({ searchParams }: Props) {
   if (search) {
     const wildcardSearch = `%${search}%`;
     query = query.or(
-      `title.ilike.${wildcardSearch},market.ilike.${wildcardSearch}`
+      `title.ilike.${wildcardSearch},market.ilike.${wildcardSearch}, house.ilike.${wildcardSearch}`
     );
   }
   if (filterResult) query = query.eq("result", filterResult);

@@ -43,7 +43,14 @@ import {
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { BetForm } from "./bet-form";
 import { ConfirmActionModal } from "./confirm-action-modal";
 import { DatePicker } from "./date-picker";
@@ -341,32 +348,80 @@ export function BetsDataTable({
     manualPagination: true,
   });
 
-  const updateParams = (
-    params: Record<string, string | number | undefined>
-  ) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === undefined || value === "") newParams.delete(key);
-      else newParams.set(key, String(value));
-    });
-    router.push(`?${newParams.toString()}`);
-  };
+  const searchParamsString = searchParams.toString();
+
+  const buildQueryString = useCallback(
+    (params: Record<string, string | number | undefined>) => {
+      const newParams = new URLSearchParams(searchParamsString);
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === undefined || value === "") newParams.delete(key);
+        else newParams.set(key, String(value));
+      });
+      return `?${newParams.toString()}`;
+    },
+    [searchParamsString]
+  );
+
+  const paramsUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const updateParamsDebounced = useCallback(
+    (params: Record<string, string | number | undefined>) => {
+      if (paramsUpdateTimeoutRef.current) {
+        clearTimeout(paramsUpdateTimeoutRef.current);
+      }
+
+      const queryString = buildQueryString(params);
+
+      paramsUpdateTimeoutRef.current = setTimeout(() => {
+        startTransition(() => {
+          router.replace(queryString, { scroll: false });
+        });
+        paramsUpdateTimeoutRef.current = null;
+      }, 300);
+    },
+    [buildQueryString, router]
+  );
+
+  const updateParamsImmediate = useCallback(
+    (params: Record<string, string | number | undefined>) => {
+      if (paramsUpdateTimeoutRef.current) {
+        clearTimeout(paramsUpdateTimeoutRef.current);
+        paramsUpdateTimeoutRef.current = null;
+      }
+
+      const queryString = buildQueryString(params);
+      startTransition(() => {
+        router.replace(queryString, { scroll: false });
+      });
+    },
+    [buildQueryString, router]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (paramsUpdateTimeoutRef.current) {
+        clearTimeout(paramsUpdateTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 justify-between">
         <div className="flex gap-2">
           <Input
-            placeholder="Filtrar por evento ou mercado..."
+            placeholder="Filtrar..."
             defaultValue={search ?? ""}
-            onChange={(e) => updateParams({ title: e.target.value, page: 0 })}
+            onChange={(e) =>
+              updateParamsDebounced({ title: e.target.value, page: 0 })
+            }
             className="max-w-xs"
           />
 
           <Select
             value={filterResult ?? "all"}
             onValueChange={(value) =>
-              updateParams({
+              updateParamsImmediate({
                 result: value === "all" ? undefined : value,
                 page: 0,
               })
@@ -390,7 +445,7 @@ export function BetsDataTable({
           <DatePicker
             value={filterDate ? new Date(`${filterDate}T00:00:00`) : undefined}
             onChange={(date) =>
-              updateParams({
+              updateParamsImmediate({
                 date: date
                   ? formatInTimeZone(date, DATE_FILTER_TIME_ZONE, "yyyy-MM-dd")
                   : undefined,
@@ -450,7 +505,7 @@ export function BetsDataTable({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => updateParams({ page: pageIndex - 1 })}
+          onClick={() => updateParamsImmediate({ page: pageIndex - 1 })}
           disabled={pageIndex === 0}
         >
           Anterior
@@ -458,7 +513,7 @@ export function BetsDataTable({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => updateParams({ page: pageIndex + 1 })}
+          onClick={() => updateParamsImmediate({ page: pageIndex + 1 })}
           disabled={pageIndex >= Math.ceil(total / pageSize) - 1}
         >
           Próximo
