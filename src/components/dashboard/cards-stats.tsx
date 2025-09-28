@@ -173,7 +173,7 @@ export function CardsStats({
         variationText={stakeVariation.text}
         tone={stakeVariation.tone}
         data={avgStake}
-        colorVar="var(--chart-3)"
+        colorVar="var(--chart-4)"
         chartClassName={chartClassName}
       />
     </div>

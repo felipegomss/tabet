@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { formatInTimeZone } from "date-fns-tz";
 
 type Bet = {
@@ -80,9 +81,11 @@ export function BetsTable({
                   </Badge>
                 </TableCell>
                 <TableCell
-                  className={
-                    bet.profit_loss >= 0 ? "text-primary" : "text-destructive"
-                  }
+                  className={cn(
+                    bet.profit_loss === 0 && "",
+                    bet.profit_loss > 0 && "text-primary",
+                    bet.profit_loss < 0 && "text-destructive"
+                  )}
                 >
                   R$ {bet.profit_loss.toFixed(2)}
                 </TableCell>

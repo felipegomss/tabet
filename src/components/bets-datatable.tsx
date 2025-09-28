@@ -43,14 +43,7 @@ import {
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { BetForm } from "./bet-form";
 import { ConfirmActionModal } from "./confirm-action-modal";
 import { DatePicker } from "./date-picker";
@@ -150,7 +143,13 @@ export function BetsDataTable({
       cell: ({ row }) => {
         const val = Number(row.getValue("profit_loss"));
         return (
-          <span className={val >= 0 ? "text-primary" : "text-destructive"}>
+          <span
+            className={cn(
+              val === 0 && "",
+              val > 0 && "text-primary",
+              val < 0 && "text-destructive"
+            )}
+          >
             R$ {val.toFixed(2)}
           </span>
         );

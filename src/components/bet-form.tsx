@@ -9,7 +9,7 @@ import { useUserSettings } from "@/providers/user-settings-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatInTimeZone } from "date-fns-tz";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Bet } from "./bets-datatable";
 import { DatePicker } from "./date-picker";
@@ -74,8 +74,54 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
 
   const effectiveStake = stakeValue && stakeValue > 0 ? stakeValue : 0;
 
-  const entryAmount =
-    units && effectiveStake ? round2(units * effectiveStake) : 0;
+  const normalizeUnits = (value: number) => Number(value.toFixed(3));
+
+  const initialUnits = normalizeUnits(form.getValues("units") ?? 0);
+
+  const [unitsInputValue, setUnitsInputValue] = useState<number>(initialUnits);
+  const [entryAmountInputValue, setEntryAmountInputValue] = useState<number>(
+    effectiveStake ? round2(initialUnits * effectiveStake) : 0
+  );
+
+  useEffect(() => {
+    const normalizedUnits = normalizeUnits(units ?? 0);
+    setUnitsInputValue(normalizedUnits);
+
+    if (effectiveStake) {
+      setEntryAmountInputValue(round2(normalizedUnits * effectiveStake));
+    }
+  }, [units, effectiveStake]);
+
+  const handleUnitsChange = (value?: number) => {
+    const normalizedUnits = normalizeUnits(value ?? 0);
+    setUnitsInputValue(normalizedUnits);
+
+    if (effectiveStake) {
+      setEntryAmountInputValue(round2(normalizedUnits * effectiveStake));
+    }
+
+    form.setValue("units", normalizedUnits, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
+
+  const handleEntryAmountChange = (value?: number) => {
+    const normalizedEntry = round2(value ?? 0);
+    setEntryAmountInputValue(normalizedEntry);
+
+    if (!effectiveStake) {
+      return;
+    }
+
+    const derivedUnits = normalizeUnits(normalizedEntry / effectiveStake);
+    setUnitsInputValue(derivedUnits);
+
+    form.setValue("units", derivedUnits, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
 
   const onSubmit = async (values: BetFormValues) => {
     try {
@@ -186,11 +232,8 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
         </Label>
         <MaskedNumberInput
           aria-required
-          value={units}
-          onValueChange={(val) => {
-            const u = Number((val ?? 0).toFixed(3));
-            form.setValue("units", u);
-          }}
+          value={unitsInputValue}
+          onValueChange={handleUnitsChange}
           suffix="ᙀ"
           decimals={3}
           id="units"
@@ -206,12 +249,8 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
         </Label>
         <MaskedNumberInput
           aria-required
-          value={entryAmount}
-          onValueChange={(val) => {
-            if (!effectiveStake) return;
-            const raw = (val ?? 0) / effectiveStake;
-            form.setValue("units", Number(raw.toFixed(3)));
-          }}
+          value={entryAmountInputValue}
+          onValueChange={handleEntryAmountChange}
           prefix="R$"
           decimals={2}
           id="entryAmount"

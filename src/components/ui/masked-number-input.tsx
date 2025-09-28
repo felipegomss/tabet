@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 
 interface MaskedNumberInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -16,14 +16,23 @@ export const MaskedNumberInput = forwardRef<
   HTMLInputElement,
   MaskedNumberInputProps
 >(({ value, onValueChange, suffix, prefix, decimals = 2, ...props }, ref) => {
-  const [rawValue, setRawValue] = useState<string>("");
-
-  // formata apenas quando o usuário sai do campo
   const formatNumber = (val: number) =>
     new Intl.NumberFormat("pt-BR", {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     }).format(val);
+
+  const formattedValue =
+    value !== undefined && !Number.isNaN(value) ? formatNumber(value) : "";
+
+  const [rawValue, setRawValue] = useState<string>(formattedValue);
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setRawValue(formattedValue);
+    }
+  }, [formattedValue, isFocused]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -62,9 +71,18 @@ export const MaskedNumberInput = forwardRef<
     onValueChange?.(rounded);
   };
 
-  const handleBlur = () => {
-    if (value !== undefined && !isNaN(value)) {
-      setRawValue(formatNumber(value));
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    setIsFocused(false);
+    setRawValue(formattedValue);
+    if (props.onBlur) {
+      props.onBlur(event);
+    }
+  };
+
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    setIsFocused(true);
+    if (props.onFocus) {
+      props.onFocus(event);
     }
   };
 
@@ -74,9 +92,10 @@ export const MaskedNumberInput = forwardRef<
         {...props}
         ref={ref}
         type="text"
-        value={rawValue || (value !== undefined ? formatNumber(value) : "")}
+        value={rawValue}
         onChange={handleChange}
         onBlur={handleBlur}
+        onFocus={handleFocus}
         className={[suffix ? "pr-8" : "", prefix ? "pl-8" : "", props.className]
           .filter(Boolean)
           .join(" ")}
