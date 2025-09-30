@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 const EVENT_TIME_ZONE = "America/Sao_Paulo";
 
@@ -238,6 +239,33 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           decimals={3}
           id="units"
         />
+        <ToggleGroup
+          variant="outline"
+          size="lg"
+          type="single"
+          value={
+            ["1", "0.5", "0.25"].includes(String(unitsInputValue))
+              ? String(unitsInputValue)
+              : undefined
+          }
+          onValueChange={(value) =>
+            handleUnitsChange(value ? Number(value) : undefined)
+          }
+        >
+          <ToggleGroupItem value="1" aria-label="Selecionar 1 unidade">
+            1 ᙀ
+          </ToggleGroupItem>
+          <ToggleGroupItem value="0.5" aria-label="Selecionar meia unidade">
+            0,5 ᙀ
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="0.25"
+            aria-label="Selecionar um quarto de unidade"
+          >
+            0,25 ᙀ
+          </ToggleGroupItem>
+        </ToggleGroup>
+
         {errors.units && (
           <p className="text-xs text-destructive">{errors.units.message}</p>
         )}
