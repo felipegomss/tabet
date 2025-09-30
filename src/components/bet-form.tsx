@@ -251,29 +251,18 @@ export function BetForm({ onSuccess, bet }: BetFormProps) {
           onValueChange={(value) =>
             handleUnitsChange(value ? Number(value) : undefined)
           }
+          className="w-full"
         >
-          <ToggleGroupItem
-            value="1"
-            aria-label="Selecionar 1 unidade"
-            className="px-4"
-          >
+          <ToggleGroupItem value="1" aria-label="Selecionar 1 unidade">
             1
             <span className="text-xs text-muted-foreground font-light"> ᙀ</span>
           </ToggleGroupItem>
-          <ToggleGroupItem
-            value="0.5"
-            aria-label="Selecionar meia unidade"
-            className="px-4"
-          >
-            0,5
+          <ToggleGroupItem value="0.75" aria-label="Selecionar 0,75 unidades">
+            0,75
             <span className="text-xs text-muted-foreground font-light"> ᙀ</span>
           </ToggleGroupItem>
-          <ToggleGroupItem
-            value="0.25"
-            aria-label="Selecionar um quarto de unidade"
-            className="px-4"
-          >
-            0,25
+          <ToggleGroupItem value="0.5" aria-label="Selecionar meia unidade">
+            0,5
             <span className="text-xs text-muted-foreground font-light"> ᙀ</span>
           </ToggleGroupItem>
         </ToggleGroup>
